@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Registro | La Sastrería</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap">
+  <script src="https://unpkg.com/html5-qrcode"></script>
+
+  <style>
+    body {
+      background: url("assets/img/fondo-hexagonos.jpg") no-repeat center center fixed;
+      background-size: cover;
+      height: 100vh;
+      font-family: "Poppins", sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 0;
+    }
+
+    .contenedor-registro {
+      position: relative;
+      background: rgba(0, 0, 0, 0.85);
+      border-radius: 35px;
+      padding: 50px 40px;
+      width: 90%;
+      max-width: 520px;
+      text-align: center;
+      box-shadow: 0 0 25px rgba(0, 255, 242, 0.3),
+                  inset 0 0 10px rgba(0, 255, 242, 0.15);
+      overflow-y: auto;
+      z-index: 2;
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    .titulo-principal {
+      color: #00fff2;
+      font-size: 2.4rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      text-shadow: 0 0 25px #00fff2, 0 0 60px #4b00ff;
+    }
+
+    .subtitulo {
+      color: #ccc;
+      margin-bottom: 30px;
+      font-size: 1rem;
+    }
+
+    .form-registro {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      color: #00fff2;
+    }
+
+    .form-registro input {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(0, 255, 204, 0.5);
+      color: #fff;
+      border-radius: 10px;
+      padding: 12px 15px;
+      outline: none;
+      width: 100%;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .btn-principal {
+      background: linear-gradient(90deg, #4b00ff, #00fff2);
+      color: #fff;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 12px 30px;
+      border-radius: 30px;
+      border: none;
+      margin-top: 20px;
+      box-shadow: 0 0 15px rgba(0, 255, 242, 0.4);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-principal:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px #00fff2, 0 0 60px #4b00ff;
+    }
+
+    .qr-field {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-qr {
+      background: linear-gradient(90deg, #00fff2, #4b00ff);
+      border: none;
+      color: #fff;
+      border-radius: 10px;
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    }
+
+    .btn-qr:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px #00fff2;
+    }
+
+    #reader {
+      width: 100%;
+      max-width: 300px;
+      margin: 10px auto;
+      display: none;
+    }
+
+    .error-msg {
+      color: #ff5555;
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    @media (max-width: 600px) {
+      .contenedor-registro {
+        padding: 35px 25px;
+        height: 95vh;
+      }
+      .qr-field {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="overlay"></div>
+
+  <div class="contenedor-registro">
+    <h1 class="titulo-principal">Registro</h1>
+    <p class="subtitulo">Completá tus datos para comenzar la experiencia</p>
+
+    <form id="registroForm" class="form-registro">
+      <label for="nombre">Nombre o Apodo *</label>
+      <input type="text" id="nombre" name="nombre" required />
+
+      <label for="telefono">Teléfono *</label>
+      <div class="telefono-container">
+        <input type="number" id="codigoPais" name="codigoPais" placeholder="+54" min="1" required />
+        <input type="tel" id="telefono" name="telefono" placeholder="9112345678" required />
+      </div>
+
+      <label for="email">Mail (opcional)</label>
+      <input type="email" id="email" name="email" placeholder="tu@correo.com" />
+
+      <label for="password">Contraseña *</label>
+      <input type="password" id="password" name="password" placeholder="********" required />
+
+      <label for="confirmPassword">Confirmar Contraseña *</label>
+      <input type="password" id="confirmPassword" name="confirmPassword" placeholder="********" required />
+      <p id="passwordError" class="error-msg"></p>
+
+      <label for="codigo_entrada">Código de entrada *</label>
+      <div class="qr-field">
+        <input 
+          type="text" 
+          id="codigo_entrada" 
+          name="codigo_entrada" 
+          maxlength="5" 
+          minlength="5"
+          placeholder="ABCDE"
+          oninput="this.value=this.value.toUpperCase().replace(/[^A-Z]/g,'').slice(0,5);" 
+          required>
+        <button type="button" class="btn-qr" id="abrirQR">📷</button>
+      </div>
+      <p class="info-campo">Ingresá el código de tu ticket o escaneá el QR.</p>
+      <p id="codigoError" class="error-msg"></p>
+
+      <div id="reader"></div>
+
+      <button type="submit" class="btn-principal">CONTINUAR</button>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById("registroForm");
+    const passwordError = document.getElementById("passwordError");
+    const codigoError = document.getElementById("codigoError");
+    const reader = document.getElementById("reader");
+    let html5QrCode;
+
+    // --- Escáner QR ---
+    document.getElementById("abrirQR").addEventListener("click", () => {
+      if (reader.style.display === "block") {
+        html5QrCode.stop();
+        reader.style.display = "none";
+        return;
+      }
+
+      reader.style.display = "block";
+      html5QrCode = new Html5Qrcode("reader");
+
+      Html5Qrcode.getCameras().then(devices => {
+        if (devices && devices.length) {
+          html5QrCode.start(
+            devices[0].id,
+            { fps: 10, qrbox: 250 },
+            (decodedText) => {
+              html5QrCode.stop();
+              reader.style.display = "none";
+              document.getElementById("codigo_entrada").value = decodedText.trim().toUpperCase();
+            }
+          ).catch(err => {
+            console.error(err);
+            alert("⚠️ No se pudo acceder a la cámara.");
+          });
+        }
+      }).catch(err => console.error("Error cámara:", err));
+    });
+
+    // --- Envío del formulario ---
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      passwordError.style.display = "none";
+      codigoError.style.display = "none";
+
+      const codigo = document.getElementById("codigo_entrada").value.trim().toUpperCase();
+      const pass = document.getElementById("password").value.trim();
+      const confirm = document.getElementById("confirmPassword").value.trim();
+
+      if (!/^[A-Z]{5}$/.test(codigo)) {
+        codigoError.textContent = "⚠️ El código debe tener 5 letras válidas.";
+        codigoError.style.display = "block";
+        return;
+      }
+
+      if (pass !== confirm) {
+        passwordError.textContent = "⚠️ Las contraseñas no coinciden.";
+        passwordError.style.display = "block";
+        return;
+      }
+
+      try {
+        // 1️⃣ Validar código
+        const checkForm = new FormData();
+        checkForm.append("codigo", codigo);
+
+        const checkResponse = await fetch("php/validar_codigo_entrada.php", {
+          method: "POST",
+          body: checkForm
+        });
+        const checkData = await checkResponse.json();
+
+        if (checkData.status !== "ok") {
+          codigoError.textContent = "❌ " + checkData.mensaje;
+          codigoError.style.display = "block";
+          return;
+        }
+
+        // 2️⃣ Enviar datos de registro
+        const registroData = new FormData(form);
+        const registroResponse = await fetch("php/guardar_registro.php", {
+          method: "POST",
+          body: registroData
+        });
+        const data = await registroResponse.json();
+
+        if (data.status === "ok") {
+          localStorage.setItem("id_usuario", data.id_usuario);
+          localStorage.setItem("usuarioNombre", document.getElementById("nombre").value);
+          localStorage.setItem("codigo_entrada", codigo);
+          localStorage.setItem("isLogged", "true");
+          alert("✅ Registro exitoso. Vamos a la siguiente etapa...");
+          window.location.href = "etapa2.html";
+        } else {
+          codigoError.textContent = "⚠️ " + (data.message || "Error al registrar.");
+          codigoError.style.display = "block";
+        }
+
+      } catch (err) {
+        console.error("Error:", err);
+        alert("⚠️ Error de conexión con el servidor.");
+      }
+    });
+  </script>
+</body>
+</html>

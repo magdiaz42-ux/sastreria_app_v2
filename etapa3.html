@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Etapa 3 | La Sastrería</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <style>
+    body {
+      background: url("assets/img/fondo-hexagonos.jpg") no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      color: #00fff2;
+      overflow: hidden;
+    }
+
+    .contenedor {
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 20px;
+      padding: 30px 25px;
+      width: 90%;
+      max-width: 500px;
+      height: 85vh;
+      text-align: center;
+      box-shadow: 0 0 30px rgba(0, 255, 200, 0.4);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+
+    .titulo-principal {
+      font-size: 1.8em;
+      color: #00fff2;
+      margin-bottom: 5px;
+      text-shadow: 0 0 15px #00fff2;
+    }
+
+    .subtitulo {
+      font-size: 0.9em;
+      color: #ccc;
+      margin-bottom: 20px;
+    }
+
+    .preguntas-wrapper {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .pregunta-container {
+      display: flex;
+      transition: transform 0.6s ease;
+      width: 500%;
+      height: 100%;
+    }
+
+    .pregunta {
+      flex: 1 0 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0 10px;
+    }
+
+    .texto-pregunta {
+      font-size: 1.2em;
+      font-weight: 600;
+      margin-bottom: 20px;
+      text-shadow: 0 0 10px rgba(0, 255, 200, 0.6);
+    }
+
+    .opciones {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .opcion {
+      background: linear-gradient(90deg, #7b2ff7, #00fff2);
+      border: none;
+      padding: 12px 25px;
+      border-radius: 25px;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.3s;
+      box-shadow: 0 0 15px rgba(0, 255, 200, 0.4);
+    }
+
+    .opcion:hover { transform: scale(1.05); }
+
+    .opcion.seleccionada {
+      box-shadow: 0 0 25px #7b2ff7;
+      border: 2px solid #7b2ff7;
+    }
+
+    .indicadores {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 15px 0;
+    }
+
+    .indicador {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background-color: rgba(0, 255, 200, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .indicador.activo {
+      background-color: #00fff2;
+      box-shadow: 0 0 10px #00fff2;
+    }
+
+    .botones-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .btn-navegacion {
+      background: transparent;
+      border: 2px solid #00fff2;
+      color: #00fff2;
+      padding: 10px 20px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn-navegacion:hover {
+      background: #00fff2;
+      color: #000;
+      box-shadow: 0 0 25px #00fff2;
+    }
+
+    .btn-finalizar {
+      background: linear-gradient(90deg, #7b2ff7, #00fff2);
+      border: none;
+      color: #fff;
+      padding: 14px 35px;
+      border-radius: 25px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 0 25px rgba(0, 255, 200, 0.5);
+      transition: all 0.3s ease;
+    }
+
+    .btn-finalizar:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 35px rgba(123, 47, 247, 0.8);
+    }
+  </style>
+</head>
+<body>
+  <div class="contenedor">
+    <div>
+      <h1 class="titulo-principal">Contanos de vos</h1>
+      <p class="subtitulo">Esto es para poder sumarte a los juegos y actividades.</p>
+    </div>
+
+    <div class="preguntas-wrapper">
+      <div id="preguntasWrapper" class="pregunta-container">
+        <div class="pregunta">
+          <div class="texto-pregunta">¿De los siguientes dulces cuál preferís?</div>
+          <div class="opciones">
+            <button class="opcion" data-rta="Team Membrillo">Team Membrillo</button>
+            <button class="opcion" data-rta="Team Batata">Team Batata</button>
+          </div>
+        </div>
+
+        <div class="pregunta">
+          <div class="texto-pregunta">¿Qué comida te gusta más?</div>
+          <div class="opciones">
+            <button class="opcion" data-rta="Team Salado">Team Salado</button>
+            <button class="opcion" data-rta="Team Dulce">Team Dulce</button>
+          </div>
+        </div>
+
+        <div class="pregunta">
+          <div class="texto-pregunta">¿Qué te gusta más?</div>
+          <div class="opciones">
+            <button class="opcion" data-rta="Team Invierno">Team Invierno</button>
+            <button class="opcion" data-rta="Team Verano">Team Verano</button>
+          </div>
+        </div>
+
+        <div class="pregunta">
+          <div class="texto-pregunta">¿Preferís la noche o el día?</div>
+          <div class="opciones">
+            <button class="opcion" data-rta="Team Noche">Team Noche</button>
+            <button class="opcion" data-rta="Team Día">Team Día</button>
+          </div>
+        </div>
+
+        <div class="pregunta">
+          <div class="texto-pregunta">¿Con quién venís más seguido al bar?</div>
+          <div class="opciones">
+            <button class="opcion" data-rta="Amigos">Con amigos</button>
+            <button class="opcion" data-rta="Pareja">Con mi pareja</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="indicadores" id="indicadores"></div>
+
+    <div class="botones-container">
+      <button id="btnAnterior" class="btn-navegacion">Anterior</button>
+      <button id="btnFinalizar" class="btn-finalizar" style="display:none;">Finalizar Registro</button>
+    </div>
+  </div>
+
+  <script>
+    const idUsuario = localStorage.getItem("id_usuario");
+    const codigoEntrada = localStorage.getItem("codigo_entrada"); // 🔹 viene de etapa 1
+    const preguntas = document.querySelectorAll(".pregunta");
+    const wrapper = document.getElementById("preguntasWrapper");
+    const indicadoresContainer = document.getElementById("indicadores");
+    const btnAnterior = document.getElementById("btnAnterior");
+    const btnFinalizar = document.getElementById("btnFinalizar");
+
+    let indice = 0;
+    let respuestas = [];
+
+    // Crear indicadores
+    preguntas.forEach((_, i) => {
+      const ind = document.createElement("div");
+      ind.classList.add("indicador");
+      if (i === 0) ind.classList.add("activo");
+      indicadoresContainer.appendChild(ind);
+    });
+    const indicadores = document.querySelectorAll(".indicador");
+
+    // Selección y auto-avance
+    document.querySelectorAll(".opcion").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const contenedor = btn.closest(".pregunta");
+        contenedor.querySelectorAll(".opcion").forEach(o => o.classList.remove("seleccionada"));
+        btn.classList.add("seleccionada");
+        respuestas[indice] = {
+          pregunta: contenedor.querySelector(".texto-pregunta").textContent,
+          respuesta: btn.dataset.rta
+        };
+
+        setTimeout(() => {
+          if (indice < preguntas.length - 1) {
+            indice++;
+            actualizarVista();
+          } else {
+            btnFinalizar.style.display = "inline-block";
+          }
+        }, 300);
+      });
+    });
+
+    function actualizarVista() {
+      wrapper.style.transform = `translateX(-${indice * 100}%)`;
+      indicadores.forEach((i, idx) => i.classList.toggle("activo", idx === indice));
+      btnAnterior.style.display = indice === 0 ? "none" : "inline-block";
+      btnFinalizar.style.display = indice === preguntas.length - 1 ? "inline-block" : "none";
+    }
+
+    btnAnterior.addEventListener("click", () => {
+      indice--;
+      actualizarVista();
+    });
+
+    // ✅ Finalizar registro + asignar cupones
+    btnFinalizar.addEventListener("click", async () => {
+      if (!respuestas[indice]) {
+        alert("⚠️ Debes responder esta pregunta antes de finalizar.");
+        return;
+      }
+
+      // Guardar respuestas
+      const formData = new FormData();
+      formData.append("id_usuario", idUsuario);
+      formData.append("respuestas", JSON.stringify(respuestas));
+
+      const guardar = await fetch("php/guardar_respuestas.php", {
+        method: "POST",
+        body: formData
+      });
+      const data = await guardar.json();
+
+      if (data.status === "success") {
+        // Ahora asignamos los cupones automáticamente 🎟️
+        const cuponData = new FormData();
+        cuponData.append("usuario_id", idUsuario);
+        cuponData.append("codigo", codigoEntrada);
+
+        const cuponResp = await fetch("php/asignar_cupones.php", {
+          method: "POST",
+          body: cuponData
+        });
+        const result = await cuponResp.json();
+
+        if (result.status === "ok") {
+          alert("🎉 Registro completo. ¡Ya tenés tus 10 cupones!");
+          localStorage.setItem("isLogged", "true");
+          window.location.href = "inicio.html";
+        } else {
+          alert("⚠️ " + result.mensaje);
+        }
+      } else {
+        alert("⚠️ " + data.message);
+      }
+    });
+
+    actualizarVista();
+  </script>
+</body>
+</html>

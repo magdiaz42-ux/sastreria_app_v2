@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Cuenta | La Sastrería</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      background: url("assets/img/fondo-hexagonos.jpg") no-repeat center center fixed;
+      background-size: cover;
+      font-family: "Poppins", sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: #00fff2;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      z-index: 0;
+    }
+
+    .contenedor-perfil {
+      position: relative;
+      background: rgba(0, 0, 0, 0.85);
+      border-radius: 35px;
+      padding: 40px;
+      width: 90%;
+      max-width: 520px;
+      text-align: center;
+      box-shadow: 0 0 25px rgba(0, 255, 242, 0.3),
+                  inset 0 0 10px rgba(0, 255, 242, 0.15);
+      z-index: 2;
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .titulo-principal {
+      color: #00fff2;
+      font-size: 2em;
+      font-weight: 700;
+      text-shadow: 0 0 20px #00fff2, 0 0 40px #4b00ff;
+      margin-bottom: 20px;
+    }
+
+    .avatar-preview {
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      border: 3px solid #00fff2;
+      box-shadow: 0 0 25px rgba(0, 255, 200, 0.6);
+      object-fit: cover;
+      margin: 20px auto;
+    }
+
+    /* === CAMPOS DE DATOS === */
+    .dato {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 15px 0;
+      gap: 12px;
+    }
+
+    .dato-label {
+      flex: 1;
+      color: #00fff2;
+      font-weight: 600;
+      text-align: left;
+    }
+
+    .dato-box {
+      flex: 2;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(0, 255, 204, 0.5);
+      border-radius: 10px;
+      padding: 10px 12px;
+      color: #fff;
+      text-align: left;
+      transition: all 0.3s ease;
+    }
+
+    .dato-box input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      width: 100%;
+      font-size: 1em;
+      font-family: inherit;
+    }
+
+    .btn-editar {
+      background: linear-gradient(90deg, #7b2ff7, #00fff2);
+      border: none;
+      color: white;
+      border-radius: 25px;
+      padding: 8px 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 20px rgba(0, 255, 200, 0.4);
+    }
+
+    .btn-editar:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px rgba(123, 47, 247, 0.7);
+    }
+
+    hr {
+      margin: 25px 0;
+      border: 1px solid rgba(0,255,255,0.2);
+    }
+
+    .btn-volver {
+      display: block;
+      margin: 35px auto 0 auto;
+      color: #00fff2;
+      text-decoration: none;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+
+    .btn-volver:hover {
+      text-shadow: 0 0 15px #00fff2;
+    }
+
+    /* Botón de cambio de contraseña */
+    #btnCambiarPass {
+      background: linear-gradient(90deg, #7b2ff7, #00fff2);
+      border: none;
+      color: #fff;
+      font-weight: 600;
+      padding: 10px 25px;
+      border-radius: 25px;
+      box-shadow: 0 0 25px rgba(0,255,242,0.6);
+      cursor: pointer;
+      transition: 0.3s;
+      margin-top: 15px;
+    }
+
+    #btnCambiarPass:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 35px rgba(123,47,247,0.8);
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay"></div>
+
+  <div class="contenedor-perfil">
+    <h1 class="titulo-principal">Mi Cuenta</h1>
+    <img id="avatarPreview" class="avatar-preview" src="assets/img/avatar1.png" alt="Avatar">
+
+    <!-- Campo: Nombre -->
+    <div class="dato">
+      <span class="dato-label">Nombre:</span>
+      <div class="dato-box" id="nombreUsuario"></div>
+      <button class="btn-editar" data-campo="nombre">Editar</button>
+    </div>
+
+    <!-- Campo: Teléfono -->
+    <div class="dato">
+      <span class="dato-label">Teléfono:</span>
+      <div class="dato-box" id="telefonoUsuario"></div>
+      <button class="btn-editar" data-campo="telefono">Editar</button>
+    </div>
+
+    <!-- Campo: Correo -->
+    <div class="dato">
+      <span class="dato-label">Correo:</span>
+      <div class="dato-box" id="emailUsuario"></div>
+      <button class="btn-editar" data-campo="email">Editar</button>
+    </div>
+
+    <hr>
+
+    <h2 style="color:#00fff2; margin-bottom:10px;">Cambiar Contraseña</h2>
+
+    <div class="dato">
+      <span class="dato-label">Actual:</span>
+      <div class="dato-box"><input type="password" id="passActual"></div>
+    </div>
+
+    <div class="dato">
+      <span class="dato-label">Nueva:</span>
+      <div class="dato-box"><input type="password" id="passNueva"></div>
+    </div>
+
+    <div class="dato">
+      <span class="dato-label">Confirmar:</span>
+      <div class="dato-box"><input type="password" id="passConfirmar"></div>
+    </div>
+
+    <button id="btnCambiarPass">Cambiar Contraseña</button>
+
+    <a href="inicio.html" class="btn-volver">← Volver al inicio</a>
+  </div>
+
+  <script>
+    // === CARGAR DATOS ===
+    const idUsuario = localStorage.getItem("id_usuario");
+    const datos = {
+      nombre: localStorage.getItem("usuarioNombre") || "Invitado",
+      telefono: localStorage.getItem("usuarioTelefono") || "No registrado",
+      email: localStorage.getItem("usuarioEmail") || "No registrado",
+      avatar: localStorage.getItem("usuarioAvatar") || "assets/img/avatars/avatar1.png",
+    };
+
+    document.getElementById("nombreUsuario").textContent = datos.nombre;
+    document.getElementById("telefonoUsuario").textContent = datos.telefono;
+    document.getElementById("emailUsuario").textContent = datos.email;
+    document.getElementById("avatarPreview").src = datos.avatar;
+
+    // === BOTONES DE EDICIÓN ===
+    document.querySelectorAll(".btn-editar").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        const campo = btn.dataset.campo;
+        const box = document.getElementById(campo + "Usuario");
+
+        if (btn.textContent === "Aceptar") {
+          const nuevoValor = box.querySelector("input").value.trim();
+          if (!nuevoValor) {
+            alert("⚠️ El campo no puede estar vacío.");
+            return;
+          }
+
+          const formData = new FormData();
+          formData.append("id_usuario", idUsuario);
+          formData.append("campo", campo);
+          formData.append("valor", nuevoValor);
+
+          try {
+            const res = await fetch("php/actualizar_perfil.php", { method: "POST", body: formData });
+            const data = await res.json();
+
+            if (data.status === "success") {
+              localStorage.setItem("usuario" + campo.charAt(0).toUpperCase() + campo.slice(1), nuevoValor);
+              box.textContent = nuevoValor;
+              btn.textContent = "Editar";
+              alert("✅ " + campo.charAt(0).toUpperCase() + campo.slice(1) + " actualizado correctamente.");
+            } else {
+              alert("⚠️ " + data.message);
+            }
+          } catch {
+            alert("⚠️ Error de conexión al actualizar.");
+          }
+        } else {
+          const valorActual = box.textContent;
+          box.innerHTML = `<input type="text" value="${valorActual}">`;
+          btn.textContent = "Aceptar";
+        }
+      });
+    });
+
+    // === CAMBIO DE CONTRASEÑA ===
+    document.getElementById("btnCambiarPass").addEventListener("click", async () => {
+      const actual = document.getElementById("passActual").value.trim();
+      const nueva = document.getElementById("passNueva").value.trim();
+      const confirmar = document.getElementById("passConfirmar").value.trim();
+
+      if (!actual || !nueva || !confirmar) {
+        alert("⚠️ Completá todos los campos.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("id_usuario", idUsuario);
+      formData.append("password_actual", actual);
+      formData.append("password_nueva", nueva);
+      formData.append("password_confirmar", confirmar);
+
+      const res = await fetch("php/actualizar_perfil.php", { method: "POST", body: formData });
+      const data = await res.json();
+
+      if (data.status === "success") {
+        alert("✅ " + data.message);
+        document.getElementById("passActual").value = "";
+        document.getElementById("passNueva").value = "";
+        document.getElementById("passConfirmar").value = "";
+      } else {
+        alert("⚠️ " + data.message);
+      }
+    });
+  </script>
+</body>
+</html>
+	

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel Cajero | La Sastrería</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;700&display=swap">
+
+  <style>
+    body {
+      background: url("assets/img/fondo-hexagonos.jpg") no-repeat center center fixed;
+      background-size: cover;
+      font-family: "Poppins", sans-serif;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      overflow: hidden;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 0;
+    }
+
+    .panel {
+      position: relative;
+      background: rgba(0, 0, 0, 0.85);
+      border-radius: 35px;
+      padding: 40px 35px;
+      width: 90%;
+      max-width: 480px;
+      text-align: center;
+      box-shadow: 0 0 25px rgba(0, 255, 242, 0.3),
+                  inset 0 0 10px rgba(0, 255, 242, 0.15);
+      z-index: 2;
+    }
+
+    h1 {
+      color: #00fff2;
+      text-shadow: 0 0 20px #00fff2;
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: #ccc;
+      margin-bottom: 20px;
+    }
+
+    .btn {
+      background: linear-gradient(90deg, #4b00ff, #00fff2);
+      color: #fff;
+      border: none;
+      padding: 14px 25px;
+      border-radius: 25px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 15px rgba(0,255,242,0.4);
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px #00fff2, 0 0 60px #4b00ff;
+    }
+
+    .ticket {
+      margin-top: 30px;
+      padding: 25px;
+      border: 2px dashed #00fff2;
+      border-radius: 15px;
+      background: rgba(255,255,255,0.05);
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+      text-align: left;
+    }
+
+    .ticket-info {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .ticket-info h2 {
+      color: #00fff2;
+      font-size: 1.3rem;
+      margin-bottom: 5px;
+      text-shadow: 0 0 10px #00fff2;
+    }
+
+    .ticket-info p {
+      color: #ccc;
+      font-size: 0.95rem;
+      margin-bottom: 8px;
+    }
+
+    .qr {
+      background: #fff;
+      border-radius: 10px;
+      padding: 8px;
+      box-shadow: 0 0 20px rgba(0,255,242,0.4);
+    }
+
+    .codigo {
+      font-size: 1.8rem;
+      letter-spacing: 3px;
+      font-weight: bold;
+      color: #fff;
+      background: #00fff220;
+      border: 1px solid #00fff2;
+      border-radius: 10px;
+      padding: 8px 20px;
+      display: inline-block;
+      margin-top: 10px;
+    }
+
+    .link {
+      display: block;
+      font-size: 0.8rem;
+      color: #00fff2;
+      margin-top: 5px;
+      word-break: break-all;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay"></div>
+
+  <div class="panel">
+    <h1>🎩 Panel Cajero</h1>
+    <p>Generá un ticket con QR y código único para el cliente.</p>
+
+    <button class="btn" id="btnGenerar">Generar Ticket</button>
+
+    <div class="ticket" id="ticket">
+      <div class="ticket-info">
+        <h2>Bienvenido a La Sastrería</h2>
+        <p>Escaneá el QR para registrarte y obtener tus cupones.</p>
+        <p><strong>Código de entrada:</strong></p>
+        <div class="codigo" id="codigo"></div>
+      </div>
+      <div class="ticket-qr">
+        <img id="qr" class="qr" src="" alt="QR del registro" width="160" height="160" />
+      </div>
+      <a id="link" class="link" href="#" target="_blank"></a>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("btnGenerar").addEventListener("click", async () => {
+      const btn = document.getElementById("btnGenerar");
+      const ticket = document.getElementById("ticket");
+      const codigoDiv = document.getElementById("codigo");
+      const qrImg = document.getElementById("qr");
+      const link = document.getElementById("link");
+
+      btn.disabled = true;
+      btn.textContent = "Generando...";
+
+      try {
+        const res = await fetch("php/generar_ticket.php");
+        const data = await res.json();
+
+        if (data.status === "ok") {
+          codigoDiv.textContent = data.codigo;
+          qrImg.src = data.qr;
+          link.href = data.url;
+          link.textContent = data.url;
+          ticket.style.display = "flex";
+        } else {
+          alert("⚠️ Error al generar el ticket.");
+        }
+      } catch (err) {
+        alert("⚠️ Error de conexión con el servidor.");
+      }
+
+      btn.disabled = false;
+      btn.textContent = "Generar Ticket";
+    });
+  </script>
+</body>
+</html>

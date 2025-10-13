@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inicio | La Sastrería</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap">
+
+  <style>
+    body {
+      background: url("assets/img/fondo-hexagonos.jpg") no-repeat center center fixed;
+      background-size: cover;
+      height: 100vh;
+      font-family: "Poppins", sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 0;
+    }
+
+    .contenedor-inicio {
+      position: relative;
+      background: rgba(0, 0, 0, 0.85);
+      border-radius: 35px;
+      padding: 60px 40px;
+      width: 90%;
+      max-width: 500px;
+      text-align: center;
+      box-shadow: 0 0 25px rgba(0, 255, 242, 0.3),
+                  inset 0 0 10px rgba(0, 255, 242, 0.15);
+      overflow: hidden;
+      z-index: 2;
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    .contenedor-inicio::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 35px;
+      padding: 3px;
+      background: linear-gradient(45deg, #4b00ff, #00fff2, #4b00ff);
+      background-size: 400% 400%;
+      animation: glowing-border 8s ease infinite;
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+      opacity: 0.8;
+      z-index: 1;
+    }
+
+    .menu-btn { position: absolute; top: 20px; left: 25px; width: 40px; height: 30px; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; z-index: 1001; }
+    .menu-btn span { height: 4px; width: 100%; background: #00fff2; border-radius: 5px; box-shadow: 0 0 10px #00fff2; transition: all 0.3s ease; }
+    .menu-btn.active span:nth-child(1) { transform: rotate(45deg) translateY(12px); }
+    .menu-btn.active span:nth-child(2) { opacity: 0; }
+    .menu-btn.active span:nth-child(3) { transform: rotate(-45deg) translateY(-12px); }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -280px;
+      width: 260px;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.95);
+      box-shadow: 0 0 25px rgba(0, 255, 204, 0.4);
+      backdrop-filter: blur(8px);
+      border-right: 2px solid rgba(0, 255, 204, 0.3);
+      transition: all 0.4s ease;
+      z-index: 1000;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .sidebar.active { left: 0; }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      margin-bottom: 25px;
+      text-align: center;
+    }
+
+    .user-info img {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      border: 2px solid #00fff2;
+      box-shadow: 0 0 20px rgba(0, 255, 204, 0.5);
+      margin-bottom: 12px;
+      object-fit: cover;
+    }
+
+    .user-info h3 {
+      color: #00fff2;
+      font-weight: 600;
+      text-shadow: 0 0 12px #00fff2;
+      margin-bottom: 8px;
+    }
+
+    .perfil-link {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 22px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #fff;
+      text-decoration: none;
+      background: linear-gradient(90deg, #4b00ff, #00fff2);
+      box-shadow: 0 0 15px rgba(0, 255, 204, 0.35);
+    }
+
+    .cupones-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .add-codigo {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .add-codigo input {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(0,255,204,0.5);
+      color: #fff;
+      border-radius: 8px;
+      padding: 8px 12px;
+      width: 120px;
+      text-transform: uppercase;
+    }
+
+    .add-codigo button {
+      background: linear-gradient(90deg, #4b00ff, #00fff2);
+      border: none;
+      padding: 8px 10px;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .cupon-section { margin-top: 25px; text-align: left; }
+    .cupon-section h3 { color: #00fff2; text-shadow: 0 0 10px #00fff2; margin-bottom: 10px; font-size: 1.2rem; }
+
+    .cupon-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .cupon {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(0,255,204,0.4);
+      border-radius: 15px;
+      padding: 10px 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #fff;
+      transition: all 0.3s ease;
+    }
+
+    .cupon.usado { opacity: 0.5; text-decoration: line-through; border-color: rgba(255,255,255,0.2); background: rgba(80,80,80,0.2); }
+    .cupon h4 { font-size: 1rem; color: #00fff2; margin: 0; }
+    .cupon.usado h4 { color: #aaa; }
+    .cupon p { font-size: 0.85rem; color: #ccc; margin: 3px 0 0 0; }
+
+    .qr { width: 60px; height: 60px; background: white; border-radius: 10px; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+    .qr img { width: 100%; height: 100%; object-fit: contain; }
+
+    @media (max-width: 768px) {
+      .contenedor-inicio { padding: 40px 25px; max-width: 90%; overflow-y: auto; }
+      .cupon-list { max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay"></div>
+
+  <div class="menu-btn" id="menuBtn"><span></span><span></span><span></span></div>
+
+  <div class="sidebar" id="sidebar">
+    <div>
+      <div class="user-info">
+        <img src="assets/img/avatar1.png" alt="Avatar del usuario" id="userAvatar">
+        <h3 id="userName">Usuario</h3>
+        <a class="perfil-link" href="perfil.html">👤 Mi Perfil</a>
+      </div>
+
+      <div class="menu-links">
+        <a href="#" id="linkCupones">🎟️ Tus Cupones</a>
+        <div class="divider"></div>
+        <a href="#">🎤 Karaoke</a><div class="divider"></div>
+        <a href="#">🎧 DJ</a><div class="divider"></div>
+        <a href="#">🎬 Silent Cine</a><div class="divider"></div>
+        <a href="#">🍸 Menú</a><div class="divider"></div>
+        <a href="#">🎭 Auditorio</a>
+      </div>
+    </div>
+
+    <button class="logout-btn" id="logoutBtn">Cerrar Sesión</button>
+  </div>
+
+  <div class="contenedor-inicio" id="contenedorPrincipal">
+    <h1 class="titulo-bienvenida" id="tituloBienvenida">Bienvenido</h1>
+  </div>
+
+  <script>
+    if (localStorage.getItem("isLogged") !== "true") window.location.href = "login.html";
+
+    const menuBtn = document.getElementById('menuBtn');
+    const sidebar = document.getElementById('sidebar');
+    menuBtn.addEventListener('click', () => {
+      menuBtn.classList.toggle('active');
+      sidebar.classList.toggle('active');
+    });
+
+    const nombreUsuario = localStorage.getItem("usuarioNombre") || "Invitado";
+    const avatarUsuario = localStorage.getItem("usuarioAvatar") || "assets/img/avatar1.png";
+    document.getElementById("userName").textContent = nombreUsuario;
+    document.getElementById("userAvatar").src = avatarUsuario;
+    document.getElementById("tituloBienvenida").textContent = `Bienvenido${nombreUsuario ? ', ' + nombreUsuario : ''}`;
+
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      localStorage.clear();
+      alert("👋 Sesión cerrada correctamente.");
+      window.location.href = "login.html";
+    });
+
+    document.getElementById("linkCupones").addEventListener("click", cargarCupones);
+
+    async function cargarCupones() {
+      const id = localStorage.getItem("id_usuario");
+      const contenedor = document.getElementById("contenedorPrincipal");
+      contenedor.innerHTML = `
+        <div class="cupones-header">
+          <h2>🎟️ Tus Cupones</h2>
+          <div class="add-codigo">
+            <input type="text" id="nuevoCodigo" maxlength="5" placeholder="ABCDE" />
+            <button id="btnAgregarCodigo">➕</button>
+          </div>
+        </div>
+        <div id="seccionCupones" style="text-align:center;">Cargando cupones...</div>
+      `;
+
+      const resp = await fetch("php/listar_cupones_usuario.php?usuario_id=" + id);
+      const data = await resp.json();
+
+      if (!data || !data.length) {
+        document.getElementById("seccionCupones").innerHTML = "<p style='color:#00fff2;'>✨ No tenés cupones aún. ¡Agregá un nuevo código para obtenerlos!</p>";
+        return;
+      }
+
+      const grupos = {};
+      data.forEach(c => { if (!grupos[c.tipo]) grupos[c.tipo] = []; grupos[c.tipo].push(c); });
+
+      let html = "";
+      for (const tipo in grupos) {
+        html += `<div class="cupon-section">
+          <h3>${tipo}</h3>
+          <div class="cupon-list">
+            ${grupos[tipo].map(c => `
+              <div class="cupon ${c.usado ? 'usado' : ''}">
+                <div>
+                  <h4>${c.nombre}</h4>
+                  <p>${c.descripcion || ''}</p>
+                </div>
+                <div class="qr">
+                  <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${c.codigo_qr}" alt="QR">
+                </div>
+              </div>`).join('')}
+          </div>
+        </div>`;
+      }
+
+      document.getElementById("seccionCupones").innerHTML = html;
+
+      document.getElementById("btnAgregarCodigo").addEventListener("click", async () => {
+        const codigo = document.getElementById("nuevoCodigo").value.trim().toUpperCase();
+        if (!/^[A-Z]{5}$/.test(codigo)) return alert("⚠️ Código inválido (deben ser 5 letras).");
+
+        const form = new FormData();
+        form.append("usuario_id", id);
+        form.append("codigo", codigo);
+
+        const r = await fetch("php/asignar_cupones.php", { method: "POST", body: form });
+        const res = await r.json();
+
+        if (res.status === "ok") {
+          alert("🎉 Se asignaron nuevos cupones!");
+          document.getElementById("nuevoCodigo").value = "";
+          cargarCupones();
+        } else {
+          alert("⚠️ " + res.mensaje);
+        }
+      });
+    }
+
+    // Mostrar cupones al cargar la página
+    window.addEventListener("load", cargarCupones);
+  </script>
+</body>
+</html>

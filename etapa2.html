@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Etapa 2 | La Sastrería</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <style>
+    body {
+      background: url("assets/img/fondo-hexagonos.jpg") no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      color: #00fff2;
+    }
+
+    .contenedor {
+      background: rgba(0, 0, 0, 0.75);
+      border-radius: 20px;
+      padding: 25px;
+      width: 90%;
+      max-width: 500px;
+      text-align: center;
+      box-shadow: 0 0 30px rgba(0, 255, 200, 0.4);
+    }
+
+    .titulo-principal {
+      font-size: 1.8em;
+      color: #00fff2;
+      margin-bottom: 5px;
+      text-shadow: 0 0 15px #00fff2;
+    }
+
+    .subtitulo {
+      font-size: 0.95em;
+      color: #ccc;
+      margin-bottom: 20px;
+    }
+
+    .selfie-section { margin-bottom: 35px; }
+
+    #flashContainer {
+      position: relative;
+      width: 260px;
+      height: 320px;
+      margin: 0 auto;
+      border-radius: 20px;
+      background: rgba(0, 255, 242, 0.1);
+      box-shadow:
+        0 0 25px rgba(0, 255, 242, 0.4),
+        0 0 50px rgba(123, 47, 247, 0.3);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      animation: flashGlow 2.5s infinite alternate;
+    }
+
+    @keyframes flashGlow {
+      0% { box-shadow: 0 0 20px rgba(0, 255, 242, 0.4); }
+      100% { box-shadow: 0 0 60px rgba(0, 255, 242, 0.9); }
+    }
+
+    #videoContainer {
+      position: relative;
+      width: 220px;
+      height: 280px;
+      border: 2px solid #00fff2;
+      border-radius: 50% / 60%;
+      overflow: hidden;
+      box-shadow: 0 0 25px rgba(0, 255, 200, 0.6);
+    }
+
+    video, .preview {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .preview {
+      display: none;
+      border-radius: 50% / 60%;
+    }
+
+    .boton {
+      background: linear-gradient(90deg, #00fff2, #7b2ff7);
+      border: none;
+      color: white;
+      padding: 10px 25px;
+      border-radius: 25px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 0 20px rgba(0, 255, 200, 0.5);
+      transition: 0.3s;
+      margin-top: 12px;
+    }
+
+    .boton:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 25px rgba(123, 47, 247, 0.7);
+    }
+
+    .boton:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .separador {
+      margin: 25px 0 15px 0;
+      color: #00fff2;
+      font-weight: bold;
+      text-shadow: 0 0 10px #00fff2;
+      border-bottom: 1px solid rgba(0, 255, 200, 0.4);
+      padding-bottom: 8px;
+    }
+
+    .avatar-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+      gap: 15px;
+      justify-items: center;
+      margin-top: 10px;
+      margin-bottom: 25px;
+    }
+
+    .avatar-opcion {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 2px solid #00fff2;
+      box-shadow: 0 0 10px rgba(0, 255, 200, 0.5);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      object-fit: cover;
+    }
+
+    .avatar-opcion:hover { transform: scale(1.1); }
+
+    .avatar-opcion.seleccionado {
+      border: 3px solid #7b2ff7;
+      box-shadow: 0 0 20px #7b2ff7;
+    }
+
+    .btn-continuar {
+      display: inline-block;
+      background: linear-gradient(90deg, #7b2ff7, #00fff2);
+      color: #fff;
+      border: none;
+      padding: 14px 40px;
+      border-radius: 30px;
+      font-size: 1.1em;
+      cursor: pointer;
+      font-weight: 600;
+      margin-top: 35px;
+      box-shadow: 0 0 25px rgba(0, 255, 200, 0.6);
+      transition: all 0.3s ease;
+    }
+
+    .btn-continuar:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 35px rgba(123, 47, 247, 0.8);
+    }
+  </style>
+</head>
+<body>
+  <div class="contenedor">
+    <h1 class="titulo-principal">Mostrate un poco</h1>
+    <p class="subtitulo">Sacate una selfie o elegí tu avatar</p>
+
+    <!-- SELFIE -->
+    <div class="selfie-section">
+      <div id="flashContainer">
+        <div id="videoContainer">
+          <video id="video" autoplay playsinline></video>
+          <img id="preview" class="preview" alt="Selfie previa">
+        </div>
+      </div>
+      <button class="boton" id="btnCapturar">Capturar Selfie</button>
+      <button class="boton" id="btnReintentar" style="display:none;">Reintentar</button>
+    </div>
+
+    <!-- AVATARS -->
+    <div class="separador">O elegí un avatar</div>
+    <div class="avatar-grid">
+      <img src="assets/img/avatars/avatar1.png" class="avatar-opcion" data-avatar="assets/img/avatars/avatar1.png" alt="Avatar 1" />
+      <img src="assets/img/avatars/avatar2.png" class="avatar-opcion" data-avatar="assets/img/avatars/avatar2.png" alt="Avatar 2" />
+      <img src="assets/img/avatars/avatar3.png" class="avatar-opcion" data-avatar="assets/img/avatars/avatar3.png" alt="Avatar 3" />
+      <img src="assets/img/avatars/avatar4.png" class="avatar-opcion" data-avatar="assets/img/avatars/avatar4.png" alt="Avatar 4" />
+      <img src="assets/img/avatars/avatar5.png" class="avatar-opcion" data-avatar="assets/img/avatars/avatar5.png" alt="Avatar 5" />
+    </div>
+
+    <!-- CONTINUAR -->
+    <button id="btnContinuar" class="btn-continuar">Continuar</button>
+  </div>
+
+  <script>
+    const idUsuario = localStorage.getItem("id_usuario");
+    const video = document.getElementById("video");
+    const preview = document.getElementById("preview");
+    const btnCapturar = document.getElementById("btnCapturar");
+    const btnReintentar = document.getElementById("btnReintentar");
+    const btnContinuar = document.getElementById("btnContinuar");
+
+    let selfieData = null;
+    let avatarSeleccionado = null;
+    let stream = null;
+
+    // --- INICIAR CÁMARA ---
+    async function iniciarCamara() {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: "user" } },
+          audio: false
+        });
+        video.srcObject = stream;
+        video.style.display = "block";
+        preview.style.display = "none";
+        btnReintentar.style.display = "none";
+        btnCapturar.disabled = false;
+      } catch (error) {
+        console.error("Error al iniciar cámara:", error);
+        alert("⚠️ No se pudo acceder a la cámara.\nDetalles: " + error.message);
+      }
+    }
+    iniciarCamara();
+
+    // --- CAPTURAR SELFIE ---
+    btnCapturar.addEventListener("click", () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext("2d");
+      ctx.filter = "brightness(1.2) contrast(1.1)";
+      ctx.drawImage(video, 0, 0);
+      selfieData = canvas.toDataURL("image/png");
+
+      // Mostrar la foto capturada
+      preview.src = selfieData;
+      preview.style.display = "block";
+      video.style.display = "none";
+      btnCapturar.disabled = true;
+      btnReintentar.style.display = "inline-block";
+
+      // Detener cámara
+      if (stream) stream.getTracks().forEach(track => track.stop());
+    });
+
+    // --- REINTENTAR SELFIE ---
+    btnReintentar.addEventListener("click", () => {
+      selfieData = null;
+      iniciarCamara();
+    });
+
+    // --- SELECCIÓN DE AVATAR ---
+    document.querySelectorAll(".avatar-opcion").forEach((img) => {
+      img.addEventListener("click", () => {
+        document.querySelectorAll(".avatar-opcion").forEach(i => i.classList.remove("seleccionado"));
+        img.classList.add("seleccionado");
+        avatarSeleccionado = img.getAttribute("data-avatar");
+      });
+    });
+
+    // --- GUARDAR Y PASAR A ETAPA 3 ---
+    btnContinuar.addEventListener("click", () => {
+      if (!avatarSeleccionado && !selfieData) {
+        alert("⚠️ Tenés que sacarte una selfie o elegir un avatar antes de continuar.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("id_usuario", idUsuario);
+      formData.append("avatar", avatarSeleccionado);
+      formData.append("selfie", selfieData);
+
+      fetch("php/guardar_avatar.php", {
+        method: "POST",
+        body: formData,
+      })
+        .then(r => r.json())
+        .then(data => {
+          if (data.status === "success") {
+            localStorage.setItem("usuarioAvatar", avatarSeleccionado || selfieData);
+            alert("✅ Imagen guardada correctamente.");
+            window.location.href = "etapa3.html";
+          } else {
+            alert("⚠️ " + data.message);
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          alert("⚠️ Error al guardar avatar/selfie.");
+        });
+    });
+  </script>
+</body>
+</html>
