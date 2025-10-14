@@ -5,46 +5,71 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Etapa 3 | La Sastrería</title>
   <link rel="stylesheet" href="assets/css/style.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap">
+
   <style>
-    body {
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100vh;
+      font-family: "Poppins", sans-serif;
+      color: #00fff2;
       background: url("assets/img/fondo-hexagonos.jpg") no-repeat center center fixed;
       background-size: cover;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      margin: 0;
-      font-family: "Poppins", sans-serif;
-      color: #00fff2;
-      overflow: hidden;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 0;
     }
 
     .contenedor {
-      background: rgba(0, 0, 0, 0.8);
-      border-radius: 20px;
-      padding: 30px 25px;
-      width: 90%;
-      max-width: 500px;
-      height: 85vh;
+      position: relative;
+      background: rgba(0, 0, 0, 0.82);
+      border-radius: 25px;
+      padding: 40px 30px;
+      width: 92%;
+      max-width: 540px;
       text-align: center;
-      box-shadow: 0 0 30px rgba(0, 255, 200, 0.4);
+      box-shadow: 0 0 35px rgba(0, 255, 200, 0.5),
+                  inset 0 0 10px rgba(0, 255, 200, 0.2);
+      z-index: 2;
+      animation: fadeIn 0.8s ease-in-out, glowPulse 4s ease-in-out infinite alternate;
+      margin: 40px 0;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      overflow: hidden;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(25px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes glowPulse {
+      0% { box-shadow: 0 0 25px rgba(0,255,242,0.3), inset 0 0 10px rgba(0,255,242,0.15); }
+      100% { box-shadow: 0 0 60px rgba(0,255,242,0.7), inset 0 0 20px rgba(0,255,242,0.25); }
     }
 
     .titulo-principal {
-      font-size: 1.8em;
+      font-size: clamp(1.7rem, 3.5vw, 2.3rem);
       color: #00fff2;
       margin-bottom: 5px;
-      text-shadow: 0 0 15px #00fff2;
+      text-shadow: 0 0 15px #00fff2, 0 0 40px #4b00ff;
     }
 
     .subtitulo {
-      font-size: 0.9em;
+      font-size: 1rem;
       color: #ccc;
-      margin-bottom: 20px;
+      margin-bottom: 25px;
     }
 
     .preguntas-wrapper {
@@ -53,6 +78,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      margin: 15px 0;
     }
 
     .pregunta-container {
@@ -128,6 +154,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-top: 10px;
     }
 
     .btn-navegacion {
@@ -163,9 +190,28 @@
       transform: scale(1.05);
       box-shadow: 0 0 35px rgba(123, 47, 247, 0.8);
     }
+
+    @media (max-width: 600px) {
+      .contenedor {
+        padding: 30px 20px;
+        border-radius: 20px;
+      }
+
+      .texto-pregunta {
+        font-size: 1rem;
+      }
+
+      .opcion {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+      }
+    }
   </style>
 </head>
+
 <body>
+  <div class="overlay"></div>
+
   <div class="contenedor">
     <div>
       <h1 class="titulo-principal">Contanos de vos</h1>
@@ -226,7 +272,7 @@
 
   <script>
     const idUsuario = localStorage.getItem("id_usuario");
-    const codigoEntrada = localStorage.getItem("codigo_entrada"); // 🔹 viene de etapa 1
+    const codigoEntrada = localStorage.getItem("codigo_entrada");
     const preguntas = document.querySelectorAll(".pregunta");
     const wrapper = document.getElementById("preguntasWrapper");
     const indicadoresContainer = document.getElementById("indicadores");
@@ -236,16 +282,15 @@
     let indice = 0;
     let respuestas = [];
 
-    // Crear indicadores
     preguntas.forEach((_, i) => {
       const ind = document.createElement("div");
       ind.classList.add("indicador");
       if (i === 0) ind.classList.add("activo");
       indicadoresContainer.appendChild(ind);
     });
+
     const indicadores = document.querySelectorAll(".indicador");
 
-    // Selección y auto-avance
     document.querySelectorAll(".opcion").forEach((btn) => {
       btn.addEventListener("click", () => {
         const contenedor = btn.closest(".pregunta");
@@ -279,14 +324,12 @@
       actualizarVista();
     });
 
-    // ✅ Finalizar registro + asignar cupones
     btnFinalizar.addEventListener("click", async () => {
       if (!respuestas[indice]) {
         alert("⚠️ Debes responder esta pregunta antes de finalizar.");
         return;
       }
 
-      // Guardar respuestas
       const formData = new FormData();
       formData.append("id_usuario", idUsuario);
       formData.append("respuestas", JSON.stringify(respuestas));
@@ -298,7 +341,6 @@
       const data = await guardar.json();
 
       if (data.status === "success") {
-        // Ahora asignamos los cupones automáticamente 🎟️
         const cuponData = new FormData();
         cuponData.append("usuario_id", idUsuario);
         cuponData.append("codigo", codigoEntrada);

@@ -1,43 +1,62 @@
 <?php
-header('Content-Type: application/json; charset=utf-8');
+header("Content-Type: application/json; charset=utf-8");
+header("Access-Control-Allow-Origin: *");
+
 include "conexion.php";
 
-// ✅ Cambiamos $conn → $conexion (porque tu conexion.php usa esa variable)
-
-// Función para generar un código aleatorio de 5 letras (A-Z)
-function generarCodigo($longitud = 5) {
+function generarCodigo($conexion, $longitud = 5) {
   $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  $out = '';
-  for ($i = 0; $i < $longitud; $i++) {
-    $out .= $chars[random_int(0, strlen($chars) - 1)];
-  }
-  return $out;
+  do {
+    $codigo = '';
+    for ($i = 0; $i < $longitud; $i++) {
+      $codigo .= $chars[random_int(0, strlen($chars) - 1)];
+    }
+
+    $check = $conexion->prepare("SELECT id FROM entradas WHERE codigo = ? LIMIT 1");
+    if (!$check) {
+      throw new Exception("Error preparando SELECT: " . $conexion->error);
+    }
+
+    $check->bind_param("s", $codigo);
+    $check->execute();
+    $exists = $check->get_result()->num_rows > 0;
+  } while ($exists);
+
+  return $codigo;
 }
 
-$codigo = generarCodigo();
+try {
+  // Validar que la tabla exista
+  $tabla = $conexion->query("SHOW TABLES LIKE 'entradas'");
+  if ($tabla->num_rows === 0) {
+    throw new Exception("⚠️ La tabla 'entradas' no existe en la base de datos activa.");
+  }
 
-// Inserta la entrada como "no usada"
-$stmt = $conexion->prepare("INSERT INTO entradas (codigo, usado) VALUES (?, 0)");
-$stmt->bind_param("s", $codigo);
+  $codigo = generarCodigo($conexion, 5);
 
-if ($stmt->execute()) {
-  // URL del registro (ajustá si lo movés de carpeta)
-  $urlRegistro = "http://localhost/sastreria_app/registro.html";
+  // Generar URL del QR
+  $qrUrl = "https://api.qrserver.com/v1/create-qr-code/?data=http://192.168.1.109/sastreria_app/registro.html%3Fcodigo=$codigo&size=200x200";
 
-  // QR del registro
-  $qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" . urlencode($urlRegistro);
+  // Insertar el nuevo ticket
+  $stmt = $conexion->prepare("INSERT INTO entradas (codigo, estado, fecha_generado) VALUES (?, 'disponible', NOW())");
+  if (!$stmt) {
+    throw new Exception("Error preparando INSERT: " . $conexion->error);
+  }
+
+  $stmt->bind_param("s", $codigo);
+  $stmt->execute();
 
   echo json_encode([
     "status" => "ok",
     "codigo" => $codigo,
-    "qr" => $qrUrl,
-    "url" => $urlRegistro
+    "qr" => $qrUrl
   ]);
-  exit;
-} else {
-  http_response_code(500);
+} catch (Throwable $e) {
   echo json_encode([
     "status" => "error",
-    "message" => "Error al guardar el código: " . $conexion->error
+    "mensaje" => "Error generando ticket: " . $e->getMessage()
   ]);
 }
+
+$conexion->close();
+?>

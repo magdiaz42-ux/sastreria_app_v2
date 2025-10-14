@@ -4,20 +4,23 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Panel Cajero | La Sastrería</title>
-  <link rel="stylesheet" href="assets/css/style.css" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;700&display=swap">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;700&display=swap" rel="stylesheet">
 
   <style>
-    body {
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100vh;
+      font-family: "Poppins", sans-serif;
+      color: #fff;
       background: url("assets/img/fondo-hexagonos.jpg") no-repeat center center fixed;
       background-size: cover;
-      font-family: "Poppins", sans-serif;
-      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      color: #fff;
-      overflow: hidden;
+      overflow-x: hidden;
+      overflow-y: auto;
     }
 
     .overlay {
@@ -31,24 +34,21 @@
       position: relative;
       background: rgba(0, 0, 0, 0.85);
       border-radius: 35px;
-      padding: 40px 35px;
-      width: 90%;
-      max-width: 480px;
+      padding: 40px 30px;
+      width: 92%;
+      max-width: 520px;
       text-align: center;
       box-shadow: 0 0 25px rgba(0, 255, 242, 0.3),
                   inset 0 0 10px rgba(0, 255, 242, 0.15);
       z-index: 2;
+      margin: 40px 0;
+      animation: fadeIn 0.8s ease-in-out;
     }
 
     h1 {
       color: #00fff2;
-      text-shadow: 0 0 20px #00fff2;
-      margin-bottom: 10px;
-    }
-
-    p {
-      color: #ccc;
-      margin-bottom: 20px;
+      text-shadow: 0 0 20px #00fff2, 0 0 40px #4b00ff;
+      margin-bottom: 15px;
     }
 
     .btn {
@@ -78,8 +78,8 @@
       display: none;
       align-items: center;
       justify-content: space-between;
-      gap: 20px;
       flex-wrap: wrap;
+      gap: 20px;
       text-align: left;
     }
 
@@ -90,22 +90,9 @@
 
     .ticket-info h2 {
       color: #00fff2;
-      font-size: 1.3rem;
-      margin-bottom: 5px;
+      font-size: 1.2rem;
       text-shadow: 0 0 10px #00fff2;
-    }
-
-    .ticket-info p {
-      color: #ccc;
-      font-size: 0.95rem;
-      margin-bottom: 8px;
-    }
-
-    .qr {
-      background: #fff;
-      border-radius: 10px;
-      padding: 8px;
-      box-shadow: 0 0 20px rgba(0,255,242,0.4);
+      margin-bottom: 6px;
     }
 
     .codigo {
@@ -121,13 +108,42 @@
       margin-top: 10px;
     }
 
-    .link {
-      display: block;
-      font-size: 0.8rem;
-      color: #00fff2;
-      margin-top: 5px;
-      word-break: break-all;
+    .qr {
+      background: #fff;
+      border-radius: 10px;
+      padding: 8px;
+      box-shadow: 0 0 20px rgba(0,255,242,0.4);
+    }
+
+    .divider {
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #00fff2, transparent);
+      margin: 25px 0;
+      border-radius: 3px;
+    }
+
+    input {
+      width: 80%;
+      padding: 10px;
+      border-radius: 12px;
+      border: 2px solid rgba(0,255,242,0.5);
+      background: rgba(255,255,255,0.05);
+      color: #fff;
+      font-size: 1rem;
       text-align: center;
+      margin-bottom: 10px;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #00fff2;
+      box-shadow: 0 0 10px #00fff2;
+    }
+
+    @media print {
+      body * { visibility: hidden; }
+      .ticket, .ticket * { visibility: visible; }
+      .ticket { position: absolute; top: 0; left: 0; width: 100%; }
     }
   </style>
 </head>
@@ -138,7 +154,7 @@
     <h1>🎩 Panel Cajero</h1>
     <p>Generá un ticket con QR y código único para el cliente.</p>
 
-    <button class="btn" id="btnGenerar">Generar Ticket</button>
+    <button class="btn" id="btnGenerar">🧾 Generar Ticket</button>
 
     <div class="ticket" id="ticket">
       <div class="ticket-info">
@@ -150,20 +166,28 @@
       <div class="ticket-qr">
         <img id="qr" class="qr" src="" alt="QR del registro" width="160" height="160" />
       </div>
-      <a id="link" class="link" href="#" target="_blank"></a>
+      <button class="btn" id="btnImprimir">🖨️ Imprimir Ticket</button>
     </div>
+
+    <div class="divider"></div>
+
+    <h2>🔍 Validar código</h2>
+    <input type="text" id="codigoValidar" placeholder="Ingresá código de entrada">
+    <button class="btn" id="btnValidar">Validar Código</button>
   </div>
 
   <script>
-    document.getElementById("btnGenerar").addEventListener("click", async () => {
-      const btn = document.getElementById("btnGenerar");
+    const btnGenerar = document.getElementById("btnGenerar");
+    const btnImprimir = document.getElementById("btnImprimir");
+    const btnValidar = document.getElementById("btnValidar");
+
+    btnGenerar.addEventListener("click", async () => {
       const ticket = document.getElementById("ticket");
       const codigoDiv = document.getElementById("codigo");
       const qrImg = document.getElementById("qr");
-      const link = document.getElementById("link");
 
-      btn.disabled = true;
-      btn.textContent = "Generando...";
+      btnGenerar.disabled = true;
+      btnGenerar.textContent = "Generando...";
 
       try {
         const res = await fetch("php/generar_ticket.php");
@@ -172,18 +196,34 @@
         if (data.status === "ok") {
           codigoDiv.textContent = data.codigo;
           qrImg.src = data.qr;
-          link.href = data.url;
-          link.textContent = data.url;
           ticket.style.display = "flex";
         } else {
-          alert("⚠️ Error al generar el ticket.");
+          alert("⚠️ " + (data.mensaje || "Error al generar el ticket."));
         }
       } catch (err) {
-        alert("⚠️ Error de conexión con el servidor.");
+        alert("⚠️ No se pudo conectar con el servidor. Verificá que Apache esté corriendo.");
       }
 
-      btn.disabled = false;
-      btn.textContent = "Generar Ticket";
+      btnGenerar.disabled = false;
+      btnGenerar.textContent = "🧾 Generar Ticket";
+    });
+
+    btnImprimir.addEventListener("click", () => window.print());
+
+    btnValidar.addEventListener("click", async () => {
+      const codigo = document.getElementById("codigoValidar").value.trim();
+      if (!codigo) return alert("⚠️ Ingresá un código para validar.");
+
+      try {
+        const res = await fetch("php/validar_codigo_entrada.php", {
+          method: "POST",
+          body: new URLSearchParams({ codigo })
+        });
+        const data = await res.json();
+        alert((data.status === "success" ? "✅ " : "⚠️ ") + data.mensaje);
+      } catch {
+        alert("⚠️ Error al conectar con el servidor.");
+      }
     });
   </script>
 </body>

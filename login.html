@@ -164,7 +164,8 @@
       }
 
       try {
-        const response = await fetch('php/login.php', {
+        // 🔧 Usamos ruta absoluta para evitar errores en móviles o fuera de localhost directo
+        const response = await fetch('http://localhost/sastreria_app/php/login.php', {
           method: 'POST',
           body: new FormData(form)
         });
@@ -176,7 +177,7 @@
         const data = await response.json();
 
         if (data.status === 'success') {
-          // Guardar datos en localStorage
+          // Guardar datos del usuario
           localStorage.setItem("id_usuario", data.id_usuario);
           localStorage.setItem("usuarioNombre", data.nombre || "Invitado");
           localStorage.setItem("usuarioTelefono", data.telefono || "");
@@ -184,15 +185,15 @@
           localStorage.setItem("usuarioAvatar", data.avatar || "assets/img/avatars/avatar1.png");
           localStorage.setItem("isLogged", "true");
 
-          alert("✅ Bienvenido " + data.nombre);
+          alert("✅ Bienvenido " + (data.nombre || "Usuario"));
           window.location.href = 'inicio.html';
         } else {
           alert("⚠️ " + (data.message || "Datos incorrectos."));
         }
 
       } catch (error) {
-        alert("⚠️ Error al conectar con el servidor. Verificá que Apache y PHP estén corriendo.");
         console.error("Error de conexión:", error);
+        alert("⚠️ No se pudo conectar con el servidor.\nVerificá que Apache y MySQL estén corriendo.");
       }
     });
   </script>

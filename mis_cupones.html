@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mis Cupones | La Sastrería</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+  <style id="cuponesCSS">
+    html, body {
+      height: auto !important;
+      min-height: 100% !important;
+      margin: 0 !important;
+      font-family: "Poppins", sans-serif !important;
+      background: url("assets/img/fondo-hexagonos.jpg") no-repeat center center fixed !important;
+      background-size: cover !important;
+      color: #fff !important;
+      overflow-y: auto !important;
+      display: block !important;
+    }
+
+    .overlay {
+      position: fixed !important;
+      inset: 0 !important;
+      background: rgba(0, 0, 0, 0.75) !important;
+      z-index: 0 !important;
+    }
+
+    .contenedor {
+      position: relative !important;
+      z-index: 2 !important;
+      background: rgba(0, 0, 0, 0.85) !important;
+      border-radius: 20px !important;
+      width: 100% !important;
+      max-width: 850px !important;
+      box-shadow: 0 0 30px rgba(0,255,242,0.4) !important;
+      padding: 35px 35px 45px !important;
+      margin: 60px auto !important;
+    }
+
+    h1 {
+      color: #00fff2 !important;
+      font-size: 1.8em !important;
+      text-align: center !important;
+      text-shadow: 0 0 15px #00fff2 !important;
+      margin-bottom: 25px !important;
+    }
+
+    #listaCupones {
+      display: grid !important;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
+      gap: 25px !important; /* 🔹 separación entre columnas y filas */
+      justify-items: center !important;
+      padding: 10px !important; /* 🔹 separación del borde del contenedor */
+    }
+
+    .cupon {
+      display: grid !important;
+      grid-template-columns: 1fr auto !important;
+      align-items: center !important;
+      gap: 10px !important;
+      border-radius: 12px !important;
+      padding: 16px 18px !important;
+      position: relative !important;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.6) !important;
+      overflow: hidden !important;
+      transition: transform 0.25s ease, box-shadow 0.25s ease !important;
+      min-height: 150px !important;
+      width: 100% !important;
+    }
+
+    .cupon:hover {
+      transform: scale(1.03) !important;
+      box-shadow: 0 0 25px rgba(0,255,242,0.6) !important;
+    }
+
+    .cupon::before, .cupon::after {
+      content: "" !important;
+      position: absolute !important;
+      top: 50% !important;
+      width: 22px !important;
+      height: 22px !important;
+      background: #000 !important;
+      border-radius: 50% !important;
+      transform: translateY(-50%) !important;
+      z-index: 1 !important;
+    }
+
+    .cupon::before { left: -11px !important; }
+    .cupon::after { right: -11px !important; }
+
+    .cupon-info { z-index: 2 !important; }
+    .cupon h2 {
+      font-size: 1.05rem !important;
+      font-weight: 600 !important;
+      margin: 0 0 5px !important;
+    }
+    .cupon p {
+      font-size: 0.9rem !important;
+      margin: 2px 0 !important;
+      color: #fff !important;
+    }
+
+    .icono {
+      font-size: 36px !important;
+      opacity: 0.9 !important;
+      z-index: 2 !important;
+    }
+
+    .cupon.trago   { background: linear-gradient(135deg, #d32f2f, #b71c1c) !important; }
+    .cupon.capricho:nth-child(3n+1) { background: linear-gradient(135deg, #f9a825, #f57f17) !important; }
+    .cupon.capricho:nth-child(3n+2) { background: linear-gradient(135deg, #ef6c00, #e65100) !important; }
+    .cupon.capricho:nth-child(3n+3) { background: linear-gradient(135deg, #1e88e5, #0d47a1) !important; }
+
+    .estado-usado {
+      opacity: 0.45 !important;
+      filter: grayscale(1) !important;
+    }
+
+    .btn-volver {
+      display: inline-block !important;
+      margin-top: 25px !important;
+      color: #00fff2 !important;
+      text-decoration: none !important;
+      font-weight: 600 !important;
+      text-align: center !important;
+      width: 100% !important;
+      transition: 0.3s !important;
+    }
+
+    .btn-volver:hover {
+      text-shadow: 0 0 15px #00fff2 !important;
+    }
+
+    @media (max-width: 600px) {
+      #listaCupones {
+        grid-template-columns: 1fr !important;
+      }
+      .cupon {
+        grid-template-columns: 1fr !important;
+        text-align: center !important;
+      }
+      .icono { margin-top: 8px !important; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="overlay"></div>
+
+  <div class="contenedor">
+    <h1>🎟️ Mis Cupones</h1>
+    <div id="listaCupones"></div>
+    <a href="inicio.html" class="btn-volver">← Volver al inicio</a>
+  </div>
+
+  <script>
+    const idUsuario = localStorage.getItem("id_usuario");
+    if (!idUsuario) {
+      alert("⚠️ No has iniciado sesión.");
+      location.href = "login.html";
+    }
+
+    async function cargarCupones() {
+      try {
+        const res = await fetch(`php/obtener_cupones.php?id_usuario=${idUsuario}`);
+        const data = await res.json();
+        const lista = document.getElementById("listaCupones");
+        lista.innerHTML = "";
+
+        if (data.status === "ok" && data.cupones.length > 0) {
+          data.cupones.forEach(c => {
+            const estadoClass = Number(c.usado) === 1 ? "estado-usado" : "";
+            const tipoClass = (c.tipo || "capricho").toLowerCase();
+            lista.insertAdjacentHTML("beforeend", `
+              <div class="cupon ${tipoClass} ${estadoClass}">
+                <div class="cupon-info">
+                  <h2>${c.nombre}</h2>
+                  <p>${c.descripcion}</p>
+                  <p><strong>Tipo:</strong> ${c.tipo}</p>
+                  <p><strong>Código:</strong> ${c.codigo_unico}</p>
+                </div>
+                <div class="icono">🎁</div>
+              </div>
+            `);
+          });
+        } else {
+          lista.innerHTML = "<p>No tenés cupones asignados todavía.</p>";
+        }
+      } catch (e) {
+        console.error(e);
+        alert("⚠️ Error al cargar cupones.");
+      }
+    }
+
+    cargarCupones();
+  </script>
+</body>
+</html>

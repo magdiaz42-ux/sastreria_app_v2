@@ -1,53 +1,45 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
-ob_start();
-
-include "conexion.php"; // Asegurate de que el archivo correcto se llame así
+include "conexion.php";
 
 $id_usuario = $_POST['id_usuario'] ?? 0;
 $avatar = $_POST['avatar'] ?? null;
 $selfie = $_POST['selfie'] ?? null;
 
 if (!$id_usuario) {
-    echo json_encode(["status" => "error", "message" => "ID de usuario no recibido"]);
-    exit;
+  echo json_encode(["status" => "error", "message" => "ID de usuario no recibido"]);
+  exit;
 }
 
-// --- Procesar selfie si existe ---
-if ($selfie) {
-    $carpeta = "../assets/img/selfies/";
-    if (!file_exists($carpeta)) {
-        mkdir($carpeta, 0777, true);
-    }
+$imgFinal = null;
 
-    $nombreArchivo = "selfie_" . $id_usuario . "_" . time() . ".png";
-    $rutaArchivo = $carpeta . $nombreArchivo;
+// --- Procesar selfie ---
+if ($selfie && str_starts_with($selfie, 'data:image')) {
+  $carpeta = "../assets/img/selfies/";
+  if (!file_exists($carpeta)) mkdir($carpeta, 0777, true);
+  $nombreArchivo = "selfie_" . $id_usuario . "_" . time() . ".png";
+  $rutaArchivo = $carpeta . $nombreArchivo;
 
-    // Quitar encabezado base64 y guardar
-    $data = str_replace('data:image/png;base64,', '', $selfie);
-    $data = str_replace(' ', '+', $data);
-    $data = base64_decode($data);
-    file_put_contents($rutaArchivo, $data);
+  $data = explode(',', $selfie);
+  $selfieDecoded = base64_decode(end($data));
+  file_put_contents($rutaArchivo, $selfieDecoded);
 
-    $selfie = "assets/img/selfies/" . $nombreArchivo; // Ruta relativa para front-end
+  $imgFinal = "assets/img/selfies/" . $nombreArchivo;
+} elseif ($avatar) {
+  // Si el usuario eligió avatar predefinido
+  $imgFinal = $avatar;
+} else {
+  $imgFinal = "assets/img/avatar1.png";
 }
 
-// --- Actualizar en DB ---
-$sql = $conexion->prepare("UPDATE usuarios SET avatar = ?, selfie = ? WHERE id = ?");
-$sql->bind_param("ssi", $avatar, $selfie, $id_usuario);
+// --- Actualizar en base de datos ---
+$sql = $conexion->prepare("UPDATE usuarios SET avatar = ? WHERE id = ?");
+$sql->bind_param("si", $imgFinal, $id_usuario);
 
 if ($sql->execute()) {
-    // Definir qué imagen usar por defecto en la app
-    $imgFinal = $selfie ? $selfie : ($avatar ?: "assets/img/avatar1.png");
-
-    echo json_encode([
-        "status" => "success",
-        "message" => "Avatar/selfie guardados correctamente",
-        "img_final" => $imgFinal
-    ]);
+  echo json_encode(["status" => "success", "img_final" => $imgFinal]);
 } else {
-    echo json_encode(["status" => "error", "message" => "Error al guardar: " . $conexion->error]);
+  echo json_encode(["status" => "error", "message" => $conexion->error]);
 }
 
 $conexion->close();
-?>

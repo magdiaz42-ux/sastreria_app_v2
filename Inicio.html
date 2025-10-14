@@ -8,58 +8,50 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap">
 
   <style>
+    /* === FONDO GLOBAL === */
     body {
       background: url("assets/img/fondo-hexagonos.jpg") no-repeat center center fixed;
       background-size: cover;
-      height: 100vh;
       font-family: "Poppins", sans-serif;
+      color: #fff;
+      margin: 0;
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      overflow: hidden;
+      overflow-x: hidden;
     }
 
     .overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.7);
+      background: rgba(0, 0, 0, 0.75);
       z-index: 0;
     }
 
-    .contenedor-inicio {
-      position: relative;
-      background: rgba(0, 0, 0, 0.85);
-      border-radius: 35px;
-      padding: 60px 40px;
-      width: 90%;
-      max-width: 500px;
-      text-align: center;
-      box-shadow: 0 0 25px rgba(0, 255, 242, 0.3),
-                  inset 0 0 10px rgba(0, 255, 242, 0.15);
-      overflow: hidden;
-      z-index: 2;
-      animation: fadeIn 0.8s ease-in-out;
+    /* === MENÚ LATERAL === */
+    .menu-btn {
+      position: fixed;
+      top: 20px;
+      left: 25px;
+      width: 40px;
+      height: 30px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      z-index: 1001;
     }
 
-    .contenedor-inicio::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border-radius: 35px;
-      padding: 3px;
-      background: linear-gradient(45deg, #4b00ff, #00fff2, #4b00ff);
-      background-size: 400% 400%;
-      animation: glowing-border 8s ease infinite;
-      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      pointer-events: none;
-      opacity: 0.8;
-      z-index: 1;
+    .menu-btn span {
+      height: 4px;
+      width: 100%;
+      background: #00fff2;
+      border-radius: 5px;
+      box-shadow: 0 0 10px #00fff2;
+      transition: all 0.3s ease;
     }
 
-    .menu-btn { position: absolute; top: 20px; left: 25px; width: 40px; height: 30px; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; z-index: 1001; }
-    .menu-btn span { height: 4px; width: 100%; background: #00fff2; border-radius: 5px; box-shadow: 0 0 10px #00fff2; transition: all 0.3s ease; }
     .menu-btn.active span:nth-child(1) { transform: rotate(45deg) translateY(12px); }
     .menu-btn.active span:nth-child(2) { opacity: 0; }
     .menu-btn.active span:nth-child(3) { transform: rotate(-45deg) translateY(-12px); }
@@ -71,9 +63,9 @@
       width: 260px;
       height: 100vh;
       background: rgba(0, 0, 0, 0.95);
+      border-right: 2px solid rgba(0, 255, 204, 0.3);
       box-shadow: 0 0 25px rgba(0, 255, 204, 0.4);
       backdrop-filter: blur(8px);
-      border-right: 2px solid rgba(0, 255, 204, 0.3);
       transition: all 0.4s ease;
       z-index: 1000;
       padding: 40px 20px;
@@ -86,9 +78,8 @@
 
     .user-info {
       display: flex;
-      align-items: center;
       flex-direction: column;
-      margin-bottom: 25px;
+      align-items: center;
       text-align: center;
     }
 
@@ -98,145 +89,273 @@
       border-radius: 50%;
       border: 2px solid #00fff2;
       box-shadow: 0 0 20px rgba(0, 255, 204, 0.5);
-      margin-bottom: 12px;
-      object-fit: cover;
+      margin-bottom: 10px;
     }
 
     .user-info h3 {
       color: #00fff2;
-      font-weight: 600;
-      text-shadow: 0 0 12px #00fff2;
-      margin-bottom: 8px;
+      margin-bottom: 5px;
     }
 
-    .perfil-link {
-      display: inline-block;
-      padding: 6px 14px;
-      border-radius: 22px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: #fff;
-      text-decoration: none;
+    .perfil-btn {
       background: linear-gradient(90deg, #4b00ff, #00fff2);
-      box-shadow: 0 0 15px rgba(0, 255, 204, 0.35);
-    }
-
-    .cupones-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-    }
-
-    .add-codigo {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .add-codigo input {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(0,255,204,0.5);
       color: #fff;
-      border-radius: 8px;
-      padding: 8px 12px;
-      width: 120px;
-      text-transform: uppercase;
-    }
-
-    .add-codigo button {
-      background: linear-gradient(90deg, #4b00ff, #00fff2);
       border: none;
-      padding: 8px 10px;
-      border-radius: 8px;
-      color: white;
+      padding: 6px 18px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
       cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .cupon-section { margin-top: 25px; text-align: left; }
-    .cupon-section h3 { color: #00fff2; text-shadow: 0 0 10px #00fff2; margin-bottom: 10px; font-size: 1.2rem; }
-
-    .cupon-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      max-height: 300px;
-      overflow-y: auto;
-    }
-
-    .cupon {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(0,255,204,0.4);
-      border-radius: 15px;
-      padding: 10px 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      color: #fff;
+      margin-top: 5px;
+      box-shadow: 0 0 12px rgba(0,255,242,0.4);
       transition: all 0.3s ease;
     }
 
-    .cupon.usado { opacity: 0.5; text-decoration: line-through; border-color: rgba(255,255,255,0.2); background: rgba(80,80,80,0.2); }
-    .cupon h4 { font-size: 1rem; color: #00fff2; margin: 0; }
-    .cupon.usado h4 { color: #aaa; }
-    .cupon p { font-size: 0.85rem; color: #ccc; margin: 3px 0 0 0; }
-
-    .qr { width: 60px; height: 60px; background: white; border-radius: 10px; display: flex; justify-content: center; align-items: center; overflow: hidden; }
-    .qr img { width: 100%; height: 100%; object-fit: contain; }
-
-    @media (max-width: 768px) {
-      .contenedor-inicio { padding: 40px 25px; max-width: 90%; overflow-y: auto; }
-      .cupon-list { max-height: none; }
+    .perfil-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 25px #00fff2;
     }
+
+    .menu-links {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .menu-links a {
+      text-decoration: none;
+      color: #fff;
+      font-weight: 600;
+      text-shadow: 0 0 10px rgba(0,255,204,0.5);
+      transition: all 0.3s ease;
+    }
+
+    .menu-links a:hover {
+      color: #00fff2;
+      transform: translateX(5px);
+    }
+
+    .logout-btn {
+      background: linear-gradient(90deg, #4b00ff, #00fff2);
+      color: #fff;
+      border: none;
+      border-radius: 25px;
+      padding: 10px 20px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 0 15px rgba(0,255,242,0.4);
+      transition: all 0.3s ease;
+    }
+
+    .logout-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px #00fff2;
+    }
+
+    /* === CONTENIDO PRINCIPAL === */
+    .contenido {
+      position: relative;
+      background: rgba(0,0,0,0.8);
+      border-radius: 25px;
+      box-shadow: 0 0 25px rgba(0,255,242,0.3);
+      width: 90%;
+      max-width: 900px;
+      padding: 40px;
+      text-align: center;
+      z-index: 2;
+      transition: all 0.3s ease;
+    }
+
+    .titulo-bienvenida {
+      color: #00fff2;
+      font-size: 2.2rem;
+      font-weight: 700;
+      text-shadow: 0 0 25px #00fff2, 0 0 60px #4b00ff;
+      animation: pulse 3s infinite alternate;
+      margin: 0;
+    }
+
+    @keyframes pulse {
+      0% { text-shadow: 0 0 20px #00fff2; }
+      100% { text-shadow: 0 0 50px #00fff2, 0 0 100px #4b00ff; }
+    }
+
+    /* === SECCIÓN CUPONES === */
+    #listaCupones {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+      margin-top: 25px;
+    }
+
+    .cupon {
+      border-radius: 12px;
+      padding: 14px 16px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+      transition: transform 0.25s ease;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .cupon:hover { transform: scale(1.03); }
+
+    .cupon h2 { font-size: 1.05rem; margin: 0 0 4px; }
+    .cupon p { font-size: .9rem; margin: 2px 0; color: #fff; }
+
+    .cupon .qr {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .cupon .qr img {
+      width: 90px;
+      height: 90px;
+      border-radius: 12px;
+      border: 2px solid rgba(0,255,242,0.4);
+      box-shadow: 0 0 10px rgba(0,255,242,0.4);
+      background: #000;
+      padding: 5px;
+    }
+
+    .icono { font-size: 32px; margin-top: 5px; }
+
+    .cupon.trago   { background: linear-gradient(135deg, #d32f2f, #b71c1c); }
+    .cupon.capricho:nth-child(3n+1) { background: linear-gradient(135deg, #f9a825, #f57f17); }
+    .cupon.capricho:nth-child(3n+2) { background: linear-gradient(135deg, #ef6c00, #e65100); }
+    .cupon.capricho:nth-child(3n+3) { background: linear-gradient(135deg, #1e88e5, #0d47a1); }
+
+    .estado-usado { opacity: .45; filter: grayscale(1); }
+
+    /* === MODAL CUPÓN AMPLIADO === */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      backdrop-filter: blur(6px);
+      animation: fadeIn 0.25s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-cupon {
+      background: rgba(0, 0, 0, 0.9);
+      border-radius: 20px;
+      box-shadow: 0 0 25px rgba(0,255,242,0.5);
+      padding: 25px 30px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      position: relative;
+      color: #fff;
+      animation: scaleIn 0.3s ease;
+    }
+
+    @keyframes scaleIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-cupon h2 {
+      margin-top: 0;
+      color: #00fff2;
+      text-shadow: 0 0 10px #00fff2;
+    }
+
+    .modal-cupon .qr img {
+      width: 160px;
+      height: 160px;
+      border-radius: 16px;
+      margin-top: 10px;
+      border: 2px solid rgba(0,255,242,0.6);
+      box-shadow: 0 0 20px rgba(0,255,242,0.6);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 12px;
+      right: 15px;
+      font-size: 1.5rem;
+      color: #00fff2;
+      cursor: pointer;
+      text-shadow: 0 0 10px #00fff2;
+      transition: transform 0.2s;
+    }
+
+    .modal-close:hover { transform: scale(1.2); }
   </style>
 </head>
+
 <body>
   <div class="overlay"></div>
 
-  <div class="menu-btn" id="menuBtn"><span></span><span></span><span></span></div>
+  <!-- Botón menú -->
+  <div class="menu-btn" id="menuBtn">
+    <span></span><span></span><span></span>
+  </div>
 
+  <!-- Menú lateral -->
   <div class="sidebar" id="sidebar">
     <div>
       <div class="user-info">
-        <img src="assets/img/avatar1.png" alt="Avatar del usuario" id="userAvatar">
+        <img id="userAvatar" src="assets/img/avatar1.png" alt="Avatar">
         <h3 id="userName">Usuario</h3>
-        <a class="perfil-link" href="perfil.html">👤 Mi Perfil</a>
+        <button class="perfil-btn" onclick="window.location.href='perfil.html'">Mi Perfil</button>
       </div>
 
       <div class="menu-links">
-        <a href="#" id="linkCupones">🎟️ Tus Cupones</a>
-        <div class="divider"></div>
-        <a href="#">🎤 Karaoke</a><div class="divider"></div>
-        <a href="#">🎧 DJ</a><div class="divider"></div>
-        <a href="#">🎬 Silent Cine</a><div class="divider"></div>
-        <a href="#">🍸 Menú</a><div class="divider"></div>
-        <a href="#">🎭 Auditorio</a>
+        <a href="#" data-section="cupones">🎟️ Tus Cupones</a>
+        <a href="#" data-section="karaoke">🎤 Karaoke</a>
+        <a href="#" data-section="dj">🎧 DJ</a>
+        <a href="#" data-section="cine">🎬 Silent Cine</a>
+        <a href="#" data-section="menu">🍸 Menú</a>
+        <a href="#" data-section="auditorio">🎭 Auditorio</a>
       </div>
     </div>
 
     <button class="logout-btn" id="logoutBtn">Cerrar Sesión</button>
   </div>
 
-  <div class="contenedor-inicio" id="contenedorPrincipal">
-    <h1 class="titulo-bienvenida" id="tituloBienvenida">Bienvenido</h1>
+  <!-- Contenedor principal -->
+  <div class="contenido" id="mainContent">
+    <h1 class="titulo-bienvenida">Bienvenido a La Sastrería</h1>
+  </div>
+
+  <!-- Modal de cupón ampliado -->
+  <div id="modalOverlay" class="modal-overlay" style="display:none;">
+    <div class="modal-cupon" id="modalCupon">
+      <span class="modal-close" id="closeModal">&times;</span>
+      <div id="modalContent"></div>
+    </div>
   </div>
 
   <script>
-    if (localStorage.getItem("isLogged") !== "true") window.location.href = "login.html";
+    if (localStorage.getItem("isLogged") !== "true") {
+      window.location.href = "login.html";
+    }
 
-    const menuBtn = document.getElementById('menuBtn');
-    const sidebar = document.getElementById('sidebar');
-    menuBtn.addEventListener('click', () => {
-      menuBtn.classList.toggle('active');
-      sidebar.classList.toggle('active');
+    const menuBtn = document.getElementById("menuBtn");
+    const sidebar = document.getElementById("sidebar");
+    const mainContent = document.getElementById("mainContent");
+    const userAvatar = document.getElementById("userAvatar");
+    const userName = document.getElementById("userName");
+
+    userAvatar.src = localStorage.getItem("usuarioAvatar") || "assets/img/avatar1.png";
+    userName.textContent = localStorage.getItem("usuarioNombre") || "Usuario";
+
+    menuBtn.addEventListener("click", () => {
+      menuBtn.classList.toggle("active");
+      sidebar.classList.toggle("active");
     });
-
-    const nombreUsuario = localStorage.getItem("usuarioNombre") || "Invitado";
-    const avatarUsuario = localStorage.getItem("usuarioAvatar") || "assets/img/avatar1.png";
-    document.getElementById("userName").textContent = nombreUsuario;
-    document.getElementById("userAvatar").src = avatarUsuario;
-    document.getElementById("tituloBienvenida").textContent = `Bienvenido${nombreUsuario ? ', ' + nombreUsuario : ''}`;
 
     document.getElementById("logoutBtn").addEventListener("click", () => {
       localStorage.clear();
@@ -244,77 +363,89 @@
       window.location.href = "login.html";
     });
 
-    document.getElementById("linkCupones").addEventListener("click", cargarCupones);
-
-    async function cargarCupones() {
-      const id = localStorage.getItem("id_usuario");
-      const contenedor = document.getElementById("contenedorPrincipal");
-      contenedor.innerHTML = `
-        <div class="cupones-header">
-          <h2>🎟️ Tus Cupones</h2>
-          <div class="add-codigo">
-            <input type="text" id="nuevoCodigo" maxlength="5" placeholder="ABCDE" />
-            <button id="btnAgregarCodigo">➕</button>
-          </div>
-        </div>
-        <div id="seccionCupones" style="text-align:center;">Cargando cupones...</div>
-      `;
-
-      const resp = await fetch("php/listar_cupones_usuario.php?usuario_id=" + id);
-      const data = await resp.json();
-
-      if (!data || !data.length) {
-        document.getElementById("seccionCupones").innerHTML = "<p style='color:#00fff2;'>✨ No tenés cupones aún. ¡Agregá un nuevo código para obtenerlos!</p>";
-        return;
-      }
-
-      const grupos = {};
-      data.forEach(c => { if (!grupos[c.tipo]) grupos[c.tipo] = []; grupos[c.tipo].push(c); });
-
-      let html = "";
-      for (const tipo in grupos) {
-        html += `<div class="cupon-section">
-          <h3>${tipo}</h3>
-          <div class="cupon-list">
-            ${grupos[tipo].map(c => `
-              <div class="cupon ${c.usado ? 'usado' : ''}">
-                <div>
-                  <h4>${c.nombre}</h4>
-                  <p>${c.descripcion || ''}</p>
-                </div>
-                <div class="qr">
-                  <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${c.codigo_qr}" alt="QR">
-                </div>
-              </div>`).join('')}
-          </div>
-        </div>`;
-      }
-
-      document.getElementById("seccionCupones").innerHTML = html;
-
-      document.getElementById("btnAgregarCodigo").addEventListener("click", async () => {
-        const codigo = document.getElementById("nuevoCodigo").value.trim().toUpperCase();
-        if (!/^[A-Z]{5}$/.test(codigo)) return alert("⚠️ Código inválido (deben ser 5 letras).");
-
-        const form = new FormData();
-        form.append("usuario_id", id);
-        form.append("codigo", codigo);
-
-        const r = await fetch("php/asignar_cupones.php", { method: "POST", body: form });
-        const res = await r.json();
-
-        if (res.status === "ok") {
-          alert("🎉 Se asignaron nuevos cupones!");
-          document.getElementById("nuevoCodigo").value = "";
-          cargarCupones();
-        } else {
-          alert("⚠️ " + res.mensaje);
-        }
+    document.querySelectorAll(".menu-links a").forEach(link => {
+      link.addEventListener("click", e => {
+        e.preventDefault();
+        const section = link.dataset.section;
+        cargarSeccion(section);
       });
+    });
+
+    async function cargarSeccion(section) {
+      if (section === "cupones") {
+        const idUsuario = localStorage.getItem("id_usuario");
+        if (!idUsuario) return alert("⚠️ No has iniciado sesión.");
+
+        mainContent.innerHTML = `<h2 style="color:#ff5afc;text-shadow:0 0 15px #ff5afc;">🎟️ Tus Cupones</h2><p>Cargando...</p>`;
+
+        try {
+          const res = await fetch(`php/obtener_cupones.php?id_usuario=${idUsuario}`);
+          const data = await res.json();
+
+          if (data.status === "ok" && data.cupones.length > 0) {
+            const lista = data.cupones.map(c => `
+              <div class="cupon ${c.tipo.toLowerCase()} ${c.usado == 1 ? "estado-usado" : ""}">
+                <h2>${c.nombre}</h2>
+                <p>${c.descripcion}</p>
+                <p><strong>Tipo:</strong> ${c.tipo}</p>
+                <p><strong>Código:</strong> ${c.codigo_unico || "—"}</p>
+                <div class="qr">
+                  <img src="https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(c.codigo_unico)}&size=100x100" alt="QR Cupón">
+                </div>
+                <div class="icono">🎁</div>
+              </div>`).join("");
+
+            mainContent.innerHTML = `
+              <h2 style="color:#ff5afc;text-shadow:0 0 15px #ff5afc;">🎟️ Tus Cupones</h2>
+              <div id="listaCupones">${lista}</div>`;
+          } else {
+            mainContent.innerHTML = `<h2>🎟️ Tus Cupones</h2><p>No tenés cupones asignados todavía.</p>`;
+          }
+        } catch {
+          mainContent.innerHTML = `<h2>🎟️ Tus Cupones</h2><p>⚠️ Error al cargar cupones.</p>`;
+        }
+      } else {
+        const titulos = {
+          karaoke: "🎤 Karaoke",
+          dj: "🎧 DJ",
+          cine: "🎬 Silent Cine",
+          menu: "🍸 Menú del Bar",
+          auditorio: "🎭 Auditorio"
+        };
+        mainContent.innerHTML = `<h2>${titulos[section]}</h2><p>Próximamente...</p>`;
+      }
     }
 
-    // Mostrar cupones al cargar la página
-    window.addEventListener("load", cargarCupones);
+    // --- Modal de cupón ampliado ---
+    const modalOverlay = document.getElementById("modalOverlay");
+    const modalContent = document.getElementById("modalContent");
+    const closeModal = document.getElementById("closeModal");
+
+    document.addEventListener("click", e => {
+      if (e.target.closest(".cupon")) {
+        const cup = e.target.closest(".cupon");
+        const nombre = cup.querySelector("h2").innerText;
+        const descripcion = cup.querySelector("p").innerText;
+        const tipo = cup.querySelector("p strong") ? cup.querySelector("p strong").innerText : "";
+        const codigo = cup.querySelector("p:nth-of-type(3)")?.innerText.replace("Código:", "").trim();
+        const qrImg = cup.querySelector(".qr img")?.src || "";
+
+        modalContent.innerHTML = `
+          <h2>${nombre}</h2>
+          <p>${descripcion}</p>
+          <p><strong>${tipo}</strong></p>
+          <p><strong>${codigo}</strong></p>
+          <div class="qr"><img src="${qrImg}" alt="QR Cupón"></div>
+          <div class="icono">🎁</div>
+        `;
+
+        modalOverlay.style.display = "flex";
+      }
+
+      if (e.target.id === "modalOverlay" || e.target.id === "closeModal") {
+        modalOverlay.style.display = "none";
+      }
+    });
   </script>
 </body>
 </html>

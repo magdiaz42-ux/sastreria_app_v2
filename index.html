@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>La Sastrería | Bienvenida</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* === ESTRUCTURA GLOBAL === */
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      font-family: "Poppins", sans-serif;
+      color: #fff;
+      background: url("assets/img/fondo-hexagonos.jpg") no-repeat center center fixed;
+      background-size: cover;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden; /* sin scroll innecesario */
+    }
+
+    /* Overlay oscura */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 0;
+    }
+
+    /* === CONTENEDOR CENTRAL === */
+    .contenedor {
+      position: relative;
+      z-index: 2;
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 40px;
+      box-shadow: 0 0 60px rgba(0,255,242,0.4);
+      width: 90%;
+      max-width: 520px;
+      text-align: center;
+      padding: 60px 40px;
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    h1 {
+      color: #00fff2;
+      text-shadow: 0 0 25px #00fff2, 0 0 60px #4b00ff;
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      margin-bottom: 10px;
+    }
+
+    .subtitulo {
+      font-size: clamp(1rem, 2.5vw, 1.2rem);
+      color: #ccc;
+      margin-bottom: 40px;
+    }
+
+    /* === BOTONES === */
+    .botones {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    @media (min-width: 480px) {
+      .botones {
+        flex-direction: row;
+      }
+    }
+
+    .btn {
+      background: linear-gradient(90deg, #4b00ff, #00fff2);
+      color: #fff;
+      font-weight: 600;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 30px;
+      padding: 14px 35px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 25px rgba(0,255,242,0.4),
+                  inset 0 0 10px rgba(255,255,255,0.1);
+      width: 80%;
+      max-width: 220px;
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 40px #00fff2;
+    }
+
+    .btn-login {
+      background: linear-gradient(90deg, #00fff2, #4b00ff);
+    }
+
+    /* === ANIMACIONES === */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-height: 700px) {
+      body {
+        align-items: flex-start;
+        padding-top: 60px;
+        overflow-y: auto;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .contenedor {
+        padding: 40px 25px;
+        border-radius: 25px;
+      }
+      h1 { font-size: 1.8rem; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="overlay"></div>
+
+  <div class="contenedor">
+    <h1>🎩 Bienvenido a La Sastrería</h1>
+    <p class="subtitulo">Prepárate para vivir una experiencia inolvidable.</p>
+
+    <div class="botones">
+      <button class="btn" onclick="window.location.href='registro.html'">Registrate</button>
+      <button class="btn btn-login" onclick="window.location.href='login.html'">Iniciar Sesión</button>
+    </div>
+  </div>
+
+  <script>
+    if (localStorage.getItem("isLogged") === "true") {
+      window.location.href = "inicio.html";
+    }
+  </script>
+</body>
+</html>

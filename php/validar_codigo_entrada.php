@@ -1,65 +1,65 @@
 <?php
-include 'conexion.php';
-header('Content-Type: application/json; charset=utf-8');
+include "conexion.php";
 
-// Obtener datos del POST
-$codigoEntrada = strtoupper(trim($_POST['codigo'] ?? ''));
-$usuario_id = intval($_POST['usuario_id'] ?? 0);
+header("Content-Type: application/json; charset=utf-8");
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type");
 
-if (empty($codigoEntrada) || $usuario_id <= 0) {
-  echo json_encode(["status" => "error", "mensaje" => "Datos incompletos"]);
-  exit;
+// --- Validar método ---
+if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+    echo json_encode(["status" => "error", "mensaje" => "Método no permitido"]);
+    exit;
 }
 
-// Validar entrada (pero sin marcarla usada todavía)
-$check = $conexion->prepare("SELECT id, usado FROM entradas WHERE codigo = ?");
-$check->bind_param("s", $codigoEntrada);
-$check->execute();
-$result = $check->get_result();
+// --- Recibir datos ---
+$codigo = strtoupper(trim($_POST["codigo"] ?? ''));
+$id_usuario = intval($_POST["id_usuario"] ?? 0);
 
-if ($result->num_rows == 0) {
-  echo json_encode(["status" => "error", "mensaje" => "Código inválido"]);
-  exit;
+if (empty($codigo) || !$id_usuario) {
+    echo json_encode(["status" => "error", "mensaje" => "Datos incompletos"]);
+    exit;
 }
 
-$row = $result->fetch_assoc();
-if ($row['usado'] == 1) {
-  echo json_encode(["status" => "error", "mensaje" => "El código ya fue utilizado."]);
-  exit;
+// --- Buscar el código en entradas ---
+$sql = $conexion->prepare("SELECT id, estado FROM entradas WHERE codigo = ? LIMIT 1");
+$sql->bind_param("s", $codigo);
+$sql->execute();
+$result = $sql->get_result();
+
+if ($result->num_rows === 0) {
+    echo json_encode(["status" => "error", "mensaje" => "Código no válido"]);
+    exit;
 }
 
-// 🚀 Asignar cupones (1 trago + 9 aleatorios)
-$conexion->begin_transaction();
+$entrada = $result->fetch_assoc();
 
-try {
-  // 1️⃣ Cupón fijo (trago)
-  $fijo = $conexion->query("SELECT id FROM cupones_base WHERE tipo = 'trago' LIMIT 1");
-  if ($fijo && $fijo->num_rows > 0) {
-    $f = $fijo->fetch_assoc();
-    $insert = $conexion->prepare("INSERT INTO cupones_asignados (usuario_id, cupon_base_id, codigo_qr, usado) VALUES (?, ?, UUID(), 0)");
-    $insert->bind_param("ii", $usuario_id, $f['id']);
-    $insert->execute();
-  }
-
-  // 2️⃣ 9 cupones aleatorios (no tipo trago)
-  $caprichos = $conexion->query("SELECT id FROM cupones_base WHERE tipo <> 'trago' ORDER BY RAND() LIMIT 9");
-  while ($rowC = $caprichos->fetch_assoc()) {
-    $insert = $conexion->prepare("INSERT INTO cupones_asignados (usuario_id, cupon_base_id, codigo_qr, usado) VALUES (?, ?, UUID(), 0)");
-    $insert->bind_param("ii", $usuario_id, $rowC['id']);
-    $insert->execute();
-  }
-
-  // ✅ recién ahora marcamos el código como usado
-  $update = $conexion->prepare("UPDATE entradas SET usado = 1 WHERE codigo = ?");
-  $update->bind_param("s", $codigoEntrada);
-  $update->execute();
-
-  $conexion->commit();
-
-  echo json_encode(["status" => "ok", "mensaje" => "10 cupones asignados correctamente (1 trago + 9 aleatorios)"]);
-
-} catch (Exception $e) {
-  $conexion->rollback();
-  echo json_encode(["status" => "error", "mensaje" => "Error al asignar cupones: " . $e->getMessage()]);
+// --- Validar estado ---
+if ($entrada["estado"] !== "disponible") {
+    echo json_encode(["status" => "error", "mensaje" => "Este código ya fue utilizado"]);
+    exit;
 }
+
+// --- Marcar entrada como usada ---
+$updateEntrada = $conexion->prepare("UPDATE entradas SET estado = 'usado' WHERE id = ?");
+$updateEntrada->bind_param("i", $entrada["id"]);
+$updateEntrada->execute();
+
+// --- Asignar cupones al usuario ---
+$updateCupones = $conexion->prepare("
+    UPDATE cupones 
+    SET id_usuario = ?, estado = 'activo', fecha_asignacion = NOW()
+    WHERE codigo_entrada = ?
+");
+$updateCupones->bind_param("is", $id_usuario, $codigo);
+$updateCupones->execute();
+
+$cupones_asignados = $conexion->affected_rows;
+
+// --- Respuesta final ---
+echo json_encode([
+    "status" => "success",
+    "mensaje" => "Código válido. Se asignaron $cupones_asignados cupones al usuario.",
+    "cupones_asignados" => $cupones_asignados
+]);
 ?>

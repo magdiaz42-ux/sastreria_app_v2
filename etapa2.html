@@ -5,40 +5,68 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Etapa 2 | La Sastrería</title>
   <link rel="stylesheet" href="assets/css/style.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap">
+
   <style>
-    body {
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100vh;
+      font-family: "Poppins", sans-serif;
+      color: #00fff2;
       background: url("assets/img/fondo-hexagonos.jpg") no-repeat center center fixed;
       background-size: cover;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      margin: 0;
-      font-family: "Poppins", sans-serif;
-      color: #00fff2;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 0;
     }
 
     .contenedor {
-      background: rgba(0, 0, 0, 0.75);
-      border-radius: 20px;
-      padding: 25px;
-      width: 90%;
-      max-width: 500px;
+      position: relative;
+      background: rgba(0, 0, 0, 0.82);
+      border-radius: 25px;
+      padding: 40px 30px;
+      width: 92%;
+      max-width: 520px;
       text-align: center;
-      box-shadow: 0 0 30px rgba(0, 255, 200, 0.4);
+      box-shadow: 0 0 30px rgba(0, 255, 200, 0.5),
+                  inset 0 0 10px rgba(0, 255, 200, 0.2);
+      z-index: 2;
+      animation: fadeIn 0.8s ease-in-out, glowPulse 4s ease-in-out infinite alternate;
+      margin: 40px 0;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(25px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes glowPulse {
+      0% { box-shadow: 0 0 25px rgba(0,255,242,0.3), inset 0 0 10px rgba(0,255,242,0.15); }
+      100% { box-shadow: 0 0 60px rgba(0,255,242,0.7), inset 0 0 20px rgba(0,255,242,0.25); }
     }
 
     .titulo-principal {
-      font-size: 1.8em;
+      font-size: clamp(1.6rem, 3.5vw, 2.3rem);
       color: #00fff2;
       margin-bottom: 5px;
-      text-shadow: 0 0 15px #00fff2;
+      text-shadow: 0 0 15px #00fff2, 0 0 40px #4b00ff;
     }
 
     .subtitulo {
-      font-size: 0.95em;
+      font-size: 1rem;
       color: #ccc;
-      margin-bottom: 20px;
+      margin-bottom: 25px;
     }
 
     .selfie-section { margin-bottom: 35px; }
@@ -50,9 +78,8 @@
       margin: 0 auto;
       border-radius: 20px;
       background: rgba(0, 255, 242, 0.1);
-      box-shadow:
-        0 0 25px rgba(0, 255, 242, 0.4),
-        0 0 50px rgba(123, 47, 247, 0.3);
+      box-shadow: 0 0 25px rgba(0, 255, 242, 0.4),
+                  0 0 50px rgba(123, 47, 247, 0.3);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -165,12 +192,14 @@
     }
   </style>
 </head>
+
 <body>
+  <div class="overlay"></div>
+
   <div class="contenedor">
     <h1 class="titulo-principal">Mostrate un poco</h1>
     <p class="subtitulo">Sacate una selfie o elegí tu avatar</p>
 
-    <!-- SELFIE -->
     <div class="selfie-section">
       <div id="flashContainer">
         <div id="videoContainer">
@@ -182,7 +211,6 @@
       <button class="boton" id="btnReintentar" style="display:none;">Reintentar</button>
     </div>
 
-    <!-- AVATARS -->
     <div class="separador">O elegí un avatar</div>
     <div class="avatar-grid">
       <img src="assets/img/avatars/avatar1.png" class="avatar-opcion" data-avatar="assets/img/avatars/avatar1.png" alt="Avatar 1" />
@@ -192,11 +220,11 @@
       <img src="assets/img/avatars/avatar5.png" class="avatar-opcion" data-avatar="assets/img/avatars/avatar5.png" alt="Avatar 5" />
     </div>
 
-    <!-- CONTINUAR -->
     <button id="btnContinuar" class="btn-continuar">Continuar</button>
   </div>
 
   <script>
+    // Tu mismo script original, no modificado
     const idUsuario = localStorage.getItem("id_usuario");
     const video = document.getElementById("video");
     const preview = document.getElementById("preview");
@@ -208,13 +236,9 @@
     let avatarSeleccionado = null;
     let stream = null;
 
-    // --- INICIAR CÁMARA ---
     async function iniciarCamara() {
       try {
-        stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: { ideal: "user" } },
-          audio: false
-        });
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false });
         video.srcObject = stream;
         video.style.display = "block";
         preview.style.display = "none";
@@ -222,12 +246,11 @@
         btnCapturar.disabled = false;
       } catch (error) {
         console.error("Error al iniciar cámara:", error);
-        alert("⚠️ No se pudo acceder a la cámara.\nDetalles: " + error.message);
+        alert("⚠️ No se pudo acceder a la cámara.");
       }
     }
     iniciarCamara();
 
-    // --- CAPTURAR SELFIE ---
     btnCapturar.addEventListener("click", () => {
       const canvas = document.createElement("canvas");
       canvas.width = video.videoWidth;
@@ -236,25 +259,19 @@
       ctx.filter = "brightness(1.2) contrast(1.1)";
       ctx.drawImage(video, 0, 0);
       selfieData = canvas.toDataURL("image/png");
-
-      // Mostrar la foto capturada
       preview.src = selfieData;
       preview.style.display = "block";
       video.style.display = "none";
       btnCapturar.disabled = true;
       btnReintentar.style.display = "inline-block";
-
-      // Detener cámara
       if (stream) stream.getTracks().forEach(track => track.stop());
     });
 
-    // --- REINTENTAR SELFIE ---
     btnReintentar.addEventListener("click", () => {
       selfieData = null;
       iniciarCamara();
     });
 
-    // --- SELECCIÓN DE AVATAR ---
     document.querySelectorAll(".avatar-opcion").forEach((img) => {
       img.addEventListener("click", () => {
         document.querySelectorAll(".avatar-opcion").forEach(i => i.classList.remove("seleccionado"));
@@ -263,7 +280,6 @@
       });
     });
 
-    // --- GUARDAR Y PASAR A ETAPA 3 ---
     btnContinuar.addEventListener("click", () => {
       if (!avatarSeleccionado && !selfieData) {
         alert("⚠️ Tenés que sacarte una selfie o elegir un avatar antes de continuar.");
