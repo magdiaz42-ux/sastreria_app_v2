@@ -135,14 +135,16 @@
     <p class="subtitulo">Prepárate para vivir una experiencia inolvidable.</p>
 
     <div class="botones">
-      <button class="btn" onclick="window.location.href='registro.html'">Registrate</button>
+      <!-- ✅ ahora apunta a la primera etapa del registro -->
+      <button class="btn" onclick="window.location.href='registro/registro_paso1.html'">Registrate</button>
       <button class="btn btn-login" onclick="window.location.href='login.html'">Iniciar Sesión</button>
     </div>
   </div>
 
   <script>
+    // Si ya hay sesión activa, redirige al index principal
     if (localStorage.getItem("isLogged") === "true") {
-      window.location.href = "inicio.html";
+      window.location.href = "inicio.html"; // o "index_app.html" según tu flujo real
     }
   </script>
 </body>

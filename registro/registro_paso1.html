@@ -4,26 +4,29 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Registro | La Sastrería</title>
-  <link rel="stylesheet" href="assets/css/style.css" />
+  
+  <!-- ✅ RUTA RESTAURADA -->
+  <link rel="stylesheet" href="../assets/css/style.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap">
   <script src="https://unpkg.com/html5-qrcode"></script>
 
   <style>
+    /* === ESTILOS COMPLEMENTARIOS === */
     html, body {
       margin: 0;
       padding: 0;
       width: 100%;
-      min-height: 100vh; /* 🔹 Se adapta al alto real del viewport */
+      min-height: 100vh;
       font-family: "Poppins", sans-serif;
       color: #fff;
-      background: url("assets/img/fondo-hexagonos.jpg") no-repeat center center fixed;
+      background: url("../assets/img/fondo-hexagonos.jpg") no-repeat center center fixed;
       background-size: cover;
       display: flex;
       justify-content: center;
       align-items: center;
       flex-direction: column;
       overflow-x: hidden;
-      overflow-y: auto; /* 🔹 Scroll natural si es necesario */
+      overflow-y: auto;
     }
 
     .overlay {
@@ -33,7 +36,6 @@
       z-index: 0;
     }
 
-    /* === CONTENEDOR PRINCIPAL === */
     .contenedor-registro {
       position: relative;
       background: rgba(0, 0, 0, 0.85);
@@ -49,7 +51,6 @@
       margin: 40px 0;
     }
 
-    /* ✨ Efecto neón respirante */
     @keyframes glowPulse {
       0% { box-shadow: 0 0 25px rgba(0,255,242,0.3), inset 0 0 10px rgba(0,255,242,0.15); }
       100% { box-shadow: 0 0 60px rgba(0,255,242,0.7), inset 0 0 20px rgba(0,255,242,0.25); }
@@ -180,31 +181,30 @@
     <p class="subtitulo">Completá tus datos para comenzar la experiencia</p>
 
     <form id="registroForm" class="form-registro">
-      <label for="nombre">Nombre o Apodo *</label>
+      <label>Nombre o Apodo *</label>
       <input type="text" id="nombre" name="nombre" required />
 
-      <label for="telefono">Teléfono *</label>
+      <label>Teléfono *</label>
       <div class="telefono-container">
         <input type="number" id="codigoPais" name="codigoPais" placeholder="+54" min="1" required />
         <input type="tel" id="telefono" name="telefono" placeholder="9112345678" required />
       </div>
 
-      <label for="email">Mail (opcional)</label>
+      <label>Mail (opcional)</label>
       <input type="email" id="email" name="email" placeholder="tu@correo.com" />
 
-      <label for="password">Contraseña *</label>
+      <label>Contraseña *</label>
       <input type="password" id="password" name="password" placeholder="********" required />
 
-      <label for="confirmPassword">Confirmar Contraseña *</label>
+      <label>Confirmar Contraseña *</label>
       <input type="password" id="confirmPassword" name="confirmPassword" placeholder="********" required />
       <p id="passwordError" class="error-msg"></p>
 
-      <label for="codigo_entrada">Código de entrada *</label>
+      <label>Código de entrada *</label>
       <div class="qr-field">
         <input type="text" id="codigo_entrada" name="codigo_entrada" maxlength="5" minlength="5"
           placeholder="ABCDE"
-          oninput="this.value=this.value.toUpperCase().replace(/[^A-Z]/g,'').slice(0,5);" 
-          required>
+          oninput="this.value=this.value.toUpperCase().replace(/[^A-Z]/g,'').slice(0,5);" required>
         <button type="button" class="btn-qr" id="abrirQR">📷</button>
       </div>
       <p id="codigoError" class="error-msg"></p>
@@ -222,7 +222,7 @@
     const reader = document.getElementById("reader");
     let html5QrCode;
 
-    // --- Escáner QR ---
+    // === Escáner QR ===
     document.getElementById("abrirQR").addEventListener("click", () => {
       if (reader.style.display === "block") {
         html5QrCode.stop();
@@ -246,7 +246,7 @@
       });
     });
 
-    // --- Envío del formulario ---
+    // === Envío del formulario ===
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       passwordError.style.display = "none";
@@ -269,44 +269,32 @@
       }
 
       try {
-        const registroData = new FormData(form);
-        const registroResponse = await fetch("php/guardar_registro.php", {
+        const formData = new FormData(form);
+        const telefonoCompleto = formData.get("codigoPais") + formData.get("telefono");
+        formData.set("telefono", telefonoCompleto);
+
+        const res = await fetch("../php/registrar_usuario.php", {
           method: "POST",
-          body: registroData
+          body: formData
         });
-        const data = await registroResponse.json();
 
-        if (data.status !== "success") {
-          codigoError.textContent = "⚠️ " + (data.message || "Error al registrar usuario.");
-          codigoError.style.display = "block";
-          return;
-        }
+        const data = await res.json();
+        console.log(data);
 
-        const idUsuario = data.id_usuario;
-        localStorage.setItem("id_usuario", idUsuario);
-        localStorage.setItem("usuarioNombre", document.getElementById("nombre").value);
-        localStorage.setItem("codigo_entrada", codigo);
-        localStorage.setItem("isLogged", "true");
+        if (data.status === "ok") {
+          localStorage.setItem("id_usuario", data.id_usuario);
+          localStorage.setItem("usuarioNombre", document.getElementById("nombre").value);
+          localStorage.setItem("isLogged", "true");
+          localStorage.setItem("codigo_entrada", document.getElementById("codigo_entrada").value);
 
-        const checkForm = new FormData();
-        checkForm.append("codigo", codigo);
-        checkForm.append("id_usuario", idUsuario);
-
-        const checkResponse = await fetch("php/validar_codigo_entrada.php", {
-          method: "POST",
-          body: checkForm
-        });
-        const checkData = await checkResponse.json();
-
-        if (checkData.status === "success") {
-          alert("✅ Registro y validación correctos. Cupones asignados: " + checkData.cupones_asignados);
-          window.location.href = "etapa2.html";
+          alert("✅ Registro correcto. ¡Pasemos a tu selfie!");
+          window.location.href = "registro_paso2_selfie.html";
         } else {
-          alert("⚠️ " + checkData.mensaje);
+          codigoError.textContent = "⚠️ " + (data.mensaje || "Error al registrar usuario.");
+          codigoError.style.display = "block";
         }
-
       } catch (err) {
-        console.error("Error:", err);
+        console.error("Error en el fetch:", err);
         alert("⚠️ Error de conexión con el servidor.");
       }
     });

@@ -2,7 +2,8 @@
 header('Content-Type: application/json; charset=utf-8');
 include "conexion.php";
 
-$id_usuario = $_POST['id_usuario'] ?? 0;
+// --- Recibir datos del cliente ---
+$id_usuario = intval($_POST['id_usuario'] ?? 0);
 $avatar = $_POST['avatar'] ?? null;
 $selfie = $_POST['selfie'] ?? null;
 
@@ -13,23 +14,40 @@ if (!$id_usuario) {
 
 $imgFinal = null;
 
-// --- Procesar selfie ---
-if ($selfie && str_starts_with($selfie, 'data:image')) {
+// --- Si se envió selfie (base64) ---
+if (!empty($selfie) && str_starts_with($selfie, 'data:image')) {
   $carpeta = "../assets/img/selfies/";
-  if (!file_exists($carpeta)) mkdir($carpeta, 0777, true);
+  
+  // Crear carpeta si no existe
+  if (!file_exists($carpeta)) {
+    mkdir($carpeta, 0777, true);
+  }
+
+  // Nombre único del archivo
   $nombreArchivo = "selfie_" . $id_usuario . "_" . time() . ".png";
   $rutaArchivo = $carpeta . $nombreArchivo;
 
+  // Decodificar y guardar
   $data = explode(',', $selfie);
-  $selfieDecoded = base64_decode(end($data));
-  file_put_contents($rutaArchivo, $selfieDecoded);
+  $imagenDecodificada = base64_decode(end($data));
 
+  if (file_put_contents($rutaArchivo, $imagenDecodificada) === false) {
+    echo json_encode(["status" => "error", "message" => "Error al guardar la imagen."]);
+    exit;
+  }
+
+  // Ruta pública para mostrar en el front
   $imgFinal = "assets/img/selfies/" . $nombreArchivo;
-} elseif ($avatar) {
-  // Si el usuario eligió avatar predefinido
+}
+
+// --- Si eligió avatar predefinido ---
+elseif (!empty($avatar)) {
   $imgFinal = $avatar;
-} else {
-  $imgFinal = "assets/img/avatar1.png";
+}
+
+// --- Imagen por defecto ---
+else {
+  $imgFinal = "assets/img/avatars/avatar1.png";
 }
 
 // --- Actualizar en base de datos ---
@@ -37,9 +55,17 @@ $sql = $conexion->prepare("UPDATE usuarios SET avatar = ? WHERE id = ?");
 $sql->bind_param("si", $imgFinal, $id_usuario);
 
 if ($sql->execute()) {
-  echo json_encode(["status" => "success", "img_final" => $imgFinal]);
+  echo json_encode([
+    "status" => "success",
+    "message" => "Avatar guardado correctamente.",
+    "img_final" => $imgFinal
+  ]);
 } else {
-  echo json_encode(["status" => "error", "message" => $conexion->error]);
+  echo json_encode([
+    "status" => "error",
+    "message" => "Error al actualizar el avatar en la base de datos: " . $conexion->error
+  ]);
 }
 
 $conexion->close();
+?>

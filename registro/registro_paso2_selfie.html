@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Etapa 2 | La Sastrería</title>
-  <link rel="stylesheet" href="assets/css/style.css" />
+  <title>Paso 2 | La Sastrería</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap">
 
   <style>
@@ -15,7 +15,7 @@
       min-height: 100vh;
       font-family: "Poppins", sans-serif;
       color: #00fff2;
-      background: url("assets/img/fondo-hexagonos.jpg") no-repeat center center fixed;
+      background: url("../assets/img/fondo-hexagonos.jpg") no-repeat center center fixed;
       background-size: cover;
       display: flex;
       justify-content: center;
@@ -213,18 +213,17 @@
 
     <div class="separador">O elegí un avatar</div>
     <div class="avatar-grid">
-      <img src="assets/img/avatars/avatar1.png" class="avatar-opcion" data-avatar="assets/img/avatars/avatar1.png" alt="Avatar 1" />
-      <img src="assets/img/avatars/avatar2.png" class="avatar-opcion" data-avatar="assets/img/avatars/avatar2.png" alt="Avatar 2" />
-      <img src="assets/img/avatars/avatar3.png" class="avatar-opcion" data-avatar="assets/img/avatars/avatar3.png" alt="Avatar 3" />
-      <img src="assets/img/avatars/avatar4.png" class="avatar-opcion" data-avatar="assets/img/avatars/avatar4.png" alt="Avatar 4" />
-      <img src="assets/img/avatars/avatar5.png" class="avatar-opcion" data-avatar="assets/img/avatars/avatar5.png" alt="Avatar 5" />
+      <img src="../assets/img/avatars/avatar1.png" class="avatar-opcion" data-avatar="../assets/img/avatars/avatar1.png" alt="Avatar 1" />
+      <img src="../assets/img/avatars/avatar2.png" class="avatar-opcion" data-avatar="../assets/img/avatars/avatar2.png" alt="Avatar 2" />
+      <img src="../assets/img/avatars/avatar3.png" class="avatar-opcion" data-avatar="../assets/img/avatars/avatar3.png" alt="Avatar 3" />
+      <img src="../assets/img/avatars/avatar4.png" class="avatar-opcion" data-avatar="../assets/img/avatars/avatar4.png" alt="Avatar 4" />
+      <img src="../assets/img/avatars/avatar5.png" class="avatar-opcion" data-avatar="../assets/img/avatars/avatar5.png" alt="Avatar 5" />
     </div>
 
     <button id="btnContinuar" class="btn-continuar">Continuar</button>
   </div>
 
   <script>
-    // Tu mismo script original, no modificado
     const idUsuario = localStorage.getItem("id_usuario");
     const video = document.getElementById("video");
     const preview = document.getElementById("preview");
@@ -291,7 +290,7 @@
       formData.append("avatar", avatarSeleccionado);
       formData.append("selfie", selfieData);
 
-      fetch("php/guardar_avatar.php", {
+      fetch("../php/guardar_avatar.php", {
         method: "POST",
         body: formData,
       })
@@ -300,7 +299,7 @@
           if (data.status === "success") {
             localStorage.setItem("usuarioAvatar", avatarSeleccionado || selfieData);
             alert("✅ Imagen guardada correctamente.");
-            window.location.href = "etapa3.html";
+            window.location.href = "registro_paso3_confirmacion.html";
           } else {
             alert("⚠️ " + data.message);
           }
