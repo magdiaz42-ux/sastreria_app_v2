@@ -4,6 +4,12 @@ header("Access-Control-Allow-Origin: *");
 
 include "conexion.php";
 
+// Compatibilidad con $con o $conexion
+if (!isset($conexion) && isset($con)) $conexion = $con;
+
+/**
+ * Genera un código único de letras (A–Z) de longitud fija.
+ */
 function generarCodigo($conexion, $longitud = 5) {
   $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   do {
@@ -16,7 +22,6 @@ function generarCodigo($conexion, $longitud = 5) {
     if (!$check) {
       throw new Exception("Error preparando SELECT: " . $conexion->error);
     }
-
     $check->bind_param("s", $codigo);
     $check->execute();
     $exists = $check->get_result()->num_rows > 0;
@@ -26,31 +31,46 @@ function generarCodigo($conexion, $longitud = 5) {
 }
 
 try {
-  // Validar que la tabla exista
+  // Verificar si la tabla existe
   $tabla = $conexion->query("SHOW TABLES LIKE 'entradas'");
   if ($tabla->num_rows === 0) {
-    throw new Exception("⚠️ La tabla 'entradas' no existe en la base de datos activa.");
+    throw new Exception("⚠️ La tabla 'entradas' no existe en la base de datos.");
   }
 
+  // --- Recibir ID del cajero (opcional) ---
+  $id_cajero = isset($_POST['id_cajero']) ? intval($_POST['id_cajero']) : null;
+
+  // --- Generar código único ---
   $codigo = generarCodigo($conexion, 5);
 
-  // Generar URL del QR
-  $qrUrl = "https://api.qrserver.com/v1/create-qr-code/?data=http://192.168.1.109/sastreria_app/registro.html%3Fcodigo=$codigo&size=200x200";
+  // --- Generar QR dinámico ---
+  // Se codifica la URL para evitar errores de caracteres
+  $baseUrl = "http://localhost/sastreria_app/registro/registro_paso1.html";
+  $registroUrl = $baseUrl . "?codigo=" . urlencode($codigo);
+  $qrUrl = "https://api.qrserver.com/v1/create-qr-code/?data=" . urlencode($registroUrl) . "&size=200x200";
 
-  // Insertar el nuevo ticket
-  $stmt = $conexion->prepare("INSERT INTO entradas (codigo, estado, fecha_generado) VALUES (?, 'disponible', NOW())");
+  // --- Insertar ticket ---
+  $stmt = $conexion->prepare("
+    INSERT INTO entradas (codigo, estado, fecha_generado, id_cajero)
+    VALUES (?, 'disponible', NOW(), ?)
+  ");
   if (!$stmt) {
     throw new Exception("Error preparando INSERT: " . $conexion->error);
   }
 
-  $stmt->bind_param("s", $codigo);
+  $stmt->bind_param("si", $codigo, $id_cajero);
   $stmt->execute();
 
+  // --- Respuesta JSON ---
   echo json_encode([
     "status" => "ok",
+    "mensaje" => "Ticket generado correctamente.",
     "codigo" => $codigo,
-    "qr" => $qrUrl
+    "qr" => $qrUrl,
+    "url_registro" => $registroUrl,
+    "id_cajero" => $id_cajero
   ]);
+
 } catch (Throwable $e) {
   echo json_encode([
     "status" => "error",

@@ -4,17 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Registro | La Sastrería</title>
-  
-  <!-- ✅ RUTA RESTAURADA -->
   <link rel="stylesheet" href="../assets/css/style.css" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/html5-qrcode"></script>
 
   <style>
-    /* === ESTILOS COMPLEMENTARIOS === */
     html, body {
       margin: 0;
-      padding: 0;
       width: 100%;
       min-height: 100vh;
       font-family: "Poppins", sans-serif;
@@ -26,37 +22,33 @@
       align-items: center;
       flex-direction: column;
       overflow-x: hidden;
-      overflow-y: auto;
     }
 
     .overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.7);
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.7);
       z-index: 0;
     }
 
     .contenedor-registro {
       position: relative;
-      background: rgba(0, 0, 0, 0.85);
+      background: rgba(0,0,0,0.85);
       border-radius: 35px;
       padding: 50px 40px;
-      width: 92%;
-      max-width: 520px;
+      width: 92%; max-width: 520px;
       text-align: center;
-      box-shadow: 0 0 35px rgba(0, 255, 242, 0.4),
-                  inset 0 0 12px rgba(0, 255, 242, 0.15);
+      box-shadow: 0 0 35px rgba(0,255,242,0.4),
+                  inset 0 0 12px rgba(0,255,242,0.15);
       z-index: 2;
       animation: fadeIn 0.8s ease-in-out, glowPulse 4s ease-in-out infinite alternate;
-      margin: 40px 0;
     }
 
     @keyframes glowPulse {
-      0% { box-shadow: 0 0 25px rgba(0,255,242,0.3), inset 0 0 10px rgba(0,255,242,0.15); }
-      100% { box-shadow: 0 0 60px rgba(0,255,242,0.7), inset 0 0 20px rgba(0,255,242,0.25); }
+      0% { box-shadow: 0 0 25px rgba(0,255,242,0.3); }
+      100% { box-shadow: 0 0 60px rgba(0,255,242,0.7); }
     }
 
-    .titulo-principal {
+    h1 {
       color: #00fff2;
       font-size: clamp(1.8rem, 4vw, 2.4rem);
       font-weight: 700;
@@ -64,10 +56,11 @@
       text-shadow: 0 0 25px #00fff2, 0 0 60px #4b00ff;
     }
 
-    .subtitulo {
-      color: #ccc;
-      margin-bottom: 30px;
-      font-size: clamp(0.95rem, 2vw, 1rem);
+    .subtitulo { color: #ccc; margin-bottom: 30px; }
+
+    label span.obligatorio {
+      color: #ff4040;
+      font-weight: bold;
     }
 
     .form-registro {
@@ -79,8 +72,8 @@
     }
 
     .form-registro input {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(0, 255, 204, 0.5);
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(0,255,204,0.5);
       color: #fff;
       border-radius: 10px;
       padding: 12px 15px;
@@ -110,7 +103,7 @@
       border-radius: 30px;
       border: none;
       margin-top: 20px;
-      box-shadow: 0 0 15px rgba(0, 255, 242, 0.4);
+      box-shadow: 0 0 15px rgba(0,255,242,0.4);
       cursor: pointer;
       transition: all 0.3s ease;
     }
@@ -120,12 +113,7 @@
       box-shadow: 0 0 30px #00fff2, 0 0 60px #4b00ff;
     }
 
-    .qr-field {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
+    .qr-field { display: flex; align-items: center; gap: 10px; }
     .btn-qr {
       background: linear-gradient(90deg, #00fff2, #4b00ff);
       border: none;
@@ -134,36 +122,16 @@
       padding: 12px 14px;
       cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+      box-shadow: 0 0 10px rgba(0,255,255,0.3);
     }
+    .btn-qr:hover { transform: scale(1.05); box-shadow: 0 0 20px #00fff2; }
 
-    .btn-qr:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 20px #00fff2;
-    }
-
-    #reader {
-      width: 100%;
-      max-width: 300px;
-      margin: 10px auto;
-      display: none;
-    }
-
-    .error-msg {
-      color: #ff5555;
-      font-size: 0.9rem;
-      display: none;
-    }
+    #reader { width: 100%; max-width: 300px; margin: 10px auto; display: none; }
+    .error-msg { color: #ff5555; font-size: 0.9rem; display: none; }
 
     @media (max-width: 600px) {
-      .contenedor-registro {
-        padding: 35px 25px;
-        border-radius: 25px;
-      }
-
-      .qr-field {
-        flex-direction: column;
-      }
+      .contenedor-registro { padding: 35px 25px; border-radius: 25px; }
+      .qr-field { flex-direction: column; }
     }
 
     @keyframes fadeIn {
@@ -177,41 +145,41 @@
   <div class="overlay"></div>
 
   <div class="contenedor-registro">
-    <h1 class="titulo-principal">Registro</h1>
+    <h1>Registro</h1>
     <p class="subtitulo">Completá tus datos para comenzar la experiencia</p>
 
     <form id="registroForm" class="form-registro">
-      <label>Nombre o Apodo *</label>
+      <label for="nombre">Nombre o Apodo <span class="obligatorio">*</span></label>
       <input type="text" id="nombre" name="nombre" required />
 
-      <label>Teléfono *</label>
+      <label for="telefono">Teléfono <span class="obligatorio">*</span></label>
       <div class="telefono-container">
-        <input type="number" id="codigoPais" name="codigoPais" placeholder="+54" min="1" required />
+        <input type="text" id="codigoPais" name="codigoPais" placeholder="+54" value="+54" required />
         <input type="tel" id="telefono" name="telefono" placeholder="9112345678" required />
       </div>
 
-      <label>Mail (opcional)</label>
+      <label for="email">Correo electrónico (opcional)</label>
       <input type="email" id="email" name="email" placeholder="tu@correo.com" />
 
-      <label>Contraseña *</label>
-      <input type="password" id="password" name="password" placeholder="********" required />
+      <label for="password">Contraseña <span class="obligatorio">*</span></label>
+      <input type="password" id="password" name="password" required />
 
-      <label>Confirmar Contraseña *</label>
-      <input type="password" id="confirmPassword" name="confirmPassword" placeholder="********" required />
+      <label for="confirmPassword">Confirmar Contraseña <span class="obligatorio">*</span></label>
+      <input type="password" id="confirmPassword" name="confirmPassword" required />
       <p id="passwordError" class="error-msg"></p>
 
-      <label>Código de entrada *</label>
+      <label for="codigo_entrada">Código único <span class="obligatorio">*</span></label>
       <div class="qr-field">
-        <input type="text" id="codigo_entrada" name="codigo_entrada" maxlength="5" minlength="5"
-          placeholder="ABCDE"
-          oninput="this.value=this.value.toUpperCase().replace(/[^A-Z]/g,'').slice(0,5);" required>
+        <input type="text" id="codigo_entrada" name="codigo_entrada"
+               maxlength="5" minlength="5" placeholder="ABCDE"
+               oninput="this.value=this.value.toUpperCase().replace(/[^A-Z]/g,'').slice(0,5);" required>
         <button type="button" class="btn-qr" id="abrirQR">📷</button>
       </div>
       <p id="codigoError" class="error-msg"></p>
 
       <div id="reader"></div>
 
-      <button type="submit" class="btn-principal">CONTINUAR</button>
+      <button type="submit" class="btn-principal">Continuar</button>
     </form>
   </div>
 
@@ -222,20 +190,17 @@
     const reader = document.getElementById("reader");
     let html5QrCode;
 
-    // === Escáner QR ===
+    // --- Escáner QR ---
     document.getElementById("abrirQR").addEventListener("click", () => {
       if (reader.style.display === "block") {
-        html5QrCode.stop();
-        reader.style.display = "none";
-        return;
+        html5QrCode.stop(); reader.style.display = "none"; return;
       }
       reader.style.display = "block";
       html5QrCode = new Html5Qrcode("reader");
       Html5Qrcode.getCameras().then(devices => {
         if (devices && devices.length) {
           html5QrCode.start(
-            devices[0].id,
-            { fps: 10, qrbox: 250 },
+            devices[0].id, { fps: 10, qrbox: 250 },
             (decodedText) => {
               html5QrCode.stop();
               reader.style.display = "none";
@@ -246,21 +211,15 @@
       });
     });
 
-    // === Envío del formulario ===
+    // --- Envío del formulario ---
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       passwordError.style.display = "none";
       codigoError.style.display = "none";
 
-      const codigo = document.getElementById("codigo_entrada").value.trim().toUpperCase();
       const pass = document.getElementById("password").value.trim();
       const confirm = document.getElementById("confirmPassword").value.trim();
-
-      if (!/^[A-Z]{5}$/.test(codigo)) {
-        codigoError.textContent = "⚠️ El código debe tener 5 letras válidas.";
-        codigoError.style.display = "block";
-        return;
-      }
+      const codigo = document.getElementById("codigo_entrada").value.trim().toUpperCase();
 
       if (pass !== confirm) {
         passwordError.textContent = "⚠️ Las contraseñas no coinciden.";
@@ -268,33 +227,32 @@
         return;
       }
 
+      if (!/^[A-Z]{5}$/.test(codigo)) {
+        codigoError.textContent = "⚠️ El código debe tener 5 letras válidas.";
+        codigoError.style.display = "block";
+        return;
+      }
+
       try {
         const formData = new FormData(form);
-        const telefonoCompleto = formData.get("codigoPais") + formData.get("telefono");
-        formData.set("telefono", telefonoCompleto);
-
-        const res = await fetch("../php/registrar_usuario.php", {
+        const response = await fetch("../php/guardar_registro.php", {
           method: "POST",
           body: formData
         });
-
-        const data = await res.json();
-        console.log(data);
+        const data = await response.json();
 
         if (data.status === "ok") {
           localStorage.setItem("id_usuario", data.id_usuario);
+          localStorage.setItem("codigo_entrada", codigo);
           localStorage.setItem("usuarioNombre", document.getElementById("nombre").value);
-          localStorage.setItem("isLogged", "true");
-          localStorage.setItem("codigo_entrada", document.getElementById("codigo_entrada").value);
-
-          alert("✅ Registro correcto. ¡Pasemos a tu selfie!");
           window.location.href = "registro_paso2_selfie.html";
         } else {
           codigoError.textContent = "⚠️ " + (data.mensaje || "Error al registrar usuario.");
           codigoError.style.display = "block";
         }
+
       } catch (err) {
-        console.error("Error en el fetch:", err);
+        console.error(err);
         alert("⚠️ Error de conexión con el servidor.");
       }
     });

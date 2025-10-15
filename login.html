@@ -1,78 +1,70 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Iniciar sesión - La Sastrería</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css">
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/style.css" />
 
   <style>
-    /* === ESTILO BASE === */
     body {
       background: url("assets/img/fondo-hexagonos.jpg") no-repeat center center fixed;
       background-size: cover;
       height: 100vh;
       font-family: "Poppins", sans-serif;
       overflow: hidden;
+      margin: 0;
     }
 
     .overlay {
       width: 100%;
       height: 100%;
-      background: rgba(0,0,0,0.65);
+      background: rgba(0, 0, 0, 0.7);
       display: flex;
       justify-content: center;
       align-items: center;
     }
 
     .contenedor {
-      background: rgba(0,0,0,0.85);
-      border-radius: 40px;
+      background: rgba(0, 0, 0, 0.85);
+      border-radius: 35px;
       padding: 40px;
       width: 90%;
-      max-width: 450px;
+      max-width: 420px;
       text-align: center;
-      box-shadow: 0 0 25px rgba(0,255,242,0.6);
-      animation: fadeIn 1s ease;
+      box-shadow: 0 0 25px rgba(0, 255, 242, 0.6);
       position: relative;
       overflow: hidden;
+      animation: fadeIn 1s ease;
     }
 
-    /* Borde brillante animado */
     .contenedor::before {
       content: "";
       position: absolute;
       inset: 0;
-      border-radius: 40px;
+      border-radius: 35px;
       padding: 2px;
       background: linear-gradient(45deg, #4b00ff, #00fff2, #4b00ff);
       background-size: 400% 400%;
-      animation: glowing-border 8s ease infinite;
-      -webkit-mask: 
-        linear-gradient(#fff 0 0) content-box, 
-        linear-gradient(#fff 0 0);
+      animation: glowing 8s ease infinite;
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
       -webkit-mask-composite: xor;
       mask-composite: exclude;
       pointer-events: none;
       opacity: 0.9;
     }
 
-    @keyframes glowing-border {
+    @keyframes glowing {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
-    }
-
-    /* === TEXTOS === */
     h2 {
       color: #00fff2;
-      font-size: 2em;
+      font-size: 2rem;
       margin-bottom: 10px;
       text-shadow: 0 0 10px #00fff2, 0 0 25px #4b00ff;
     }
@@ -80,20 +72,20 @@
     p {
       color: #ccc;
       margin-bottom: 25px;
+      font-size: 0.95rem;
     }
 
-    /* === INPUTS === */
     .input {
       width: 100%;
       padding: 12px;
       margin-bottom: 15px;
       border-radius: 12px;
-      border: 2px solid rgba(0,255,242,0.4);
-      background: rgba(255,255,255,0.05);
+      border: 2px solid rgba(0, 255, 242, 0.4);
+      background: rgba(255, 255, 255, 0.05);
       color: #fff;
+      text-align: center;
       outline: none;
       transition: all 0.3s ease;
-      text-align: center;
     }
 
     .input:focus {
@@ -101,7 +93,6 @@
       box-shadow: 0 0 12px #00fff2;
     }
 
-    /* === BOTÓN === */
     .btn {
       background: linear-gradient(90deg, #4b00ff, #00fff2);
       border: none;
@@ -109,7 +100,7 @@
       font-weight: 600;
       padding: 12px 35px;
       border-radius: 25px;
-      box-shadow: 0 0 25px rgba(0,255,242,0.6);
+      box-shadow: 0 0 25px rgba(0, 255, 242, 0.6);
       cursor: pointer;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
       width: 100%;
@@ -117,10 +108,9 @@
 
     .btn:hover {
       transform: scale(1.05);
-      box-shadow: 0 0 35px rgba(0,255,242,0.9);
+      box-shadow: 0 0 35px rgba(0, 255, 242, 0.9);
     }
 
-    /* === LINKS === */
     a {
       color: #00fff2;
       text-decoration: none;
@@ -130,33 +120,39 @@
     a:hover {
       text-shadow: 0 0 10px #00fff2;
     }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
   </style>
 </head>
+
 <body>
   <div class="overlay">
     <div class="contenedor">
       <h2>Iniciar sesión</h2>
-      <p>Ingresá tu teléfono o mail para continuar</p>
-      
+      <p>Ingresá tu teléfono o correo electrónico para continuar</p>
+
       <form id="loginForm">
-        <input id="usuario" name="usuario" class="input" placeholder="Teléfono o correo electrónico" required>
-        <input id="password" name="password" class="input" type="password" placeholder="Contraseña" required>
+        <input id="usuario" name="usuario" class="input" placeholder="Teléfono o correo" required />
+        <input id="password" name="password" class="input" type="password" placeholder="Contraseña" required />
         <button type="submit" class="btn">Entrar</button>
       </form>
 
       <p><a href="recuperar.html">¿Olvidaste tu contraseña?</a></p>
-      <p><a href="registro.html">¿Todavía no tenés cuenta? Registrate acá</a></p>
+      <p><a href="registro/registro_paso1.html">¿Todavía no tenés cuenta? Registrate acá</a></p>
     </div>
   </div>
 
   <script>
-    const form = document.getElementById('loginForm');
+    const form = document.getElementById("loginForm");
 
-    form.addEventListener('submit', async (e) => {
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const usuario = document.getElementById('usuario').value.trim();
-      const password = document.getElementById('password').value.trim();
+      const usuario = document.getElementById("usuario").value.trim();
+      const password = document.getElementById("password").value.trim();
 
       if (!usuario || !password) {
         alert("⚠️ Ingresá tus datos.");
@@ -164,10 +160,9 @@
       }
 
       try {
-        // 🔧 Usamos ruta absoluta para evitar errores en móviles o fuera de localhost directo
-        const response = await fetch('http://localhost/sastreria_app/php/login.php', {
-          method: 'POST',
-          body: new FormData(form)
+        const response = await fetch("php/login.php", {
+          method: "POST",
+          body: new FormData(form),
         });
 
         if (!response.ok) {
@@ -176,21 +171,37 @@
 
         const data = await response.json();
 
-        if (data.status === 'success') {
-          // Guardar datos del usuario
+        if (data.status === "success") {
+          // Guardar datos de sesión
           localStorage.setItem("id_usuario", data.id_usuario);
-          localStorage.setItem("usuarioNombre", data.nombre || "Invitado");
-          localStorage.setItem("usuarioTelefono", data.telefono || "");
-          localStorage.setItem("usuarioEmail", data.email || "");
+          localStorage.setItem("usuarioNombre", data.nombre);
           localStorage.setItem("usuarioAvatar", data.avatar || "assets/img/avatars/avatar1.png");
+          localStorage.setItem("rol", data.rol);
           localStorage.setItem("isLogged", "true");
 
-          alert("✅ Bienvenido " + (data.nombre || "Usuario"));
-          window.location.href = 'inicio.html';
-        } else {
-          alert("⚠️ " + (data.message || "Datos incorrectos."));
-        }
+          alert(`✅ Bienvenido ${data.nombre} (${data.rol || "cliente"})`);
 
+          // 🔀 Redirección según rol
+          switch (data.rol) {
+            case "cajero":
+              window.location.href = "cajero/panel_cajero.html";
+              break;
+            case "admin":
+            case "duenio":
+              window.location.href = "admin/panel_admin.html";
+              break;
+            case "dj":
+              window.location.href = "dj/panel_dj.html";
+              break;
+            case "cocinero":
+              window.location.href = "cocina/panel_cocina.html";
+              break;
+            default:
+              window.location.href = "inicio.html";
+          }
+        } else {
+          alert("⚠️ " + (data.message || "Datos incorrectos o usuario inactivo."));
+        }
       } catch (error) {
         console.error("Error de conexión:", error);
         alert("⚠️ No se pudo conectar con el servidor.\nVerificá que Apache y MySQL estén corriendo.");

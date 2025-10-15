@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Paso 3 | La Sastrería</title>
+  <title>Etapa 3 | La Sastrería</title>
   <link rel="stylesheet" href="../assets/css/style.css" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
   <style>
     html, body {
@@ -35,14 +35,18 @@
       position: relative;
       background: rgba(0, 0, 0, 0.85);
       border-radius: 25px;
-      padding: 50px 35px;
+      padding: 40px 30px;
       width: 92%;
       max-width: 540px;
       text-align: center;
-      box-shadow: 0 0 35px rgba(0, 255, 200, 0.6),
+      box-shadow: 0 0 35px rgba(0, 255, 200, 0.5),
                   inset 0 0 10px rgba(0, 255, 200, 0.2);
       z-index: 2;
       animation: fadeIn 0.8s ease-in-out, glowPulse 4s ease-in-out infinite alternate;
+      margin: 40px 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
     @keyframes fadeIn {
@@ -55,40 +59,132 @@
       100% { box-shadow: 0 0 60px rgba(0,255,242,0.7), inset 0 0 20px rgba(0,255,242,0.25); }
     }
 
-    .titulo {
-      font-size: clamp(1.8rem, 3.5vw, 2.5rem);
-      text-shadow: 0 0 20px #00fff2, 0 0 40px #4b00ff;
-      margin-bottom: 10px;
+    .titulo-principal {
+      font-size: clamp(1.7rem, 3.5vw, 2.3rem);
+      color: #00fff2;
+      margin-bottom: 5px;
+      text-shadow: 0 0 15px #00fff2, 0 0 40px #4b00ff;
     }
 
     .subtitulo {
       font-size: 1rem;
       color: #ccc;
-      margin-bottom: 35px;
+      margin-bottom: 25px;
     }
 
-    .icono {
-      font-size: 4rem;
+    .preguntas-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+
+    .pregunta-container {
+      display: flex;
+      transition: transform 0.6s ease;
+      width: 500%;
+    }
+
+    .pregunta {
+      flex: 1 0 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 0 20px;
+    }
+
+    .texto-pregunta {
+      font-size: 1.2em;
+      font-weight: 600;
       margin-bottom: 20px;
-      text-shadow: 0 0 30px #00fff2;
+      text-shadow: 0 0 10px rgba(0, 255, 200, 0.6);
     }
 
-    .btn-inicio {
+    .opciones {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .opcion {
       background: linear-gradient(90deg, #7b2ff7, #00fff2);
       border: none;
-      color: white;
-      padding: 14px 40px;
-      border-radius: 30px;
-      font-weight: 600;
+      padding: 12px 25px;
+      border-radius: 25px;
+      color: #fff;
       cursor: pointer;
-      font-size: 1.1em;
-      box-shadow: 0 0 30px rgba(0,255,242,0.5);
+      font-weight: 600;
       transition: 0.3s;
+      box-shadow: 0 0 15px rgba(0, 255, 200, 0.4);
     }
 
-    .btn-inicio:hover {
+    .opcion:hover { transform: scale(1.05); }
+    .opcion.seleccionada { box-shadow: 0 0 25px #7b2ff7; border: 2px solid #7b2ff7; }
+
+    .indicadores {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 15px 0;
+    }
+
+    .indicador {
+      width: 12px; height: 12px; border-radius: 50%;
+      background-color: rgba(0, 255, 200, 0.3);
+      transition: all 0.3s ease;
+    }
+    .indicador.activo { background-color: #00fff2; box-shadow: 0 0 10px #00fff2; }
+
+    .botones-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .btn-navegacion {
+      background: transparent;
+      border: 2px solid #00fff2;
+      color: #00fff2;
+      padding: 10px 20px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn-navegacion:hover {
+      background: #00fff2;
+      color: #000;
+      box-shadow: 0 0 25px #00fff2;
+    }
+
+    .btn-finalizar {
+      background: linear-gradient(90deg, #7b2ff7, #00fff2);
+      border: none;
+      color: #fff;
+      padding: 14px 35px;
+      border-radius: 25px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 0 25px rgba(0, 255, 200, 0.5);
+      transition: all 0.3s ease;
+    }
+
+    .btn-finalizar:hover {
       transform: scale(1.05);
-      box-shadow: 0 0 40px rgba(123,47,247,0.8);
+      box-shadow: 0 0 35px rgba(123, 47, 247, 0.8);
+    }
+
+    @media (max-width: 600px) {
+      .contenedor { padding: 30px 20px; border-radius: 20px; }
+      .texto-pregunta { font-size: 1rem; }
+      .opcion { padding: 10px 20px; font-size: 0.9rem; }
     }
   </style>
 </head>
@@ -96,45 +192,160 @@
 <body>
   <div class="overlay"></div>
 
-  <div class="contenedor" id="contenedorConfirmacion">
-    <div class="icono">🎉</div>
-    <h1 class="titulo">¡Registro completado!</h1>
-    <p class="subtitulo">Te asignamos tus 10 cupones de bienvenida.<br>Podés empezar a disfrutar tu experiencia en La Sastrería.</p>
-    <button class="btn-inicio" id="btnIrInicio">Ir al inicio</button>
+  <div class="contenedor">
+    <h1 class="titulo-principal">Contanos de vos</h1>
+    <p class="subtitulo">Así te sumamos a las actividades del bar 🎉</p>
+
+    <div class="preguntas-wrapper">
+      <div id="preguntasWrapper" class="pregunta-container">
+        <!-- PREGUNTAS -->
+        <div class="pregunta">
+          <div class="texto-pregunta">¿De los siguientes dulces cuál preferís?</div>
+          <div class="opciones">
+            <button class="opcion" data-rta="Team Membrillo">Team Membrillo</button>
+            <button class="opcion" data-rta="Team Batata">Team Batata</button>
+          </div>
+        </div>
+
+        <div class="pregunta">
+          <div class="texto-pregunta">¿Qué comida te gusta más?</div>
+          <div class="opciones">
+            <button class="opcion" data-rta="Team Salado">Team Salado</button>
+            <button class="opcion" data-rta="Team Dulce">Team Dulce</button>
+          </div>
+        </div>
+
+        <div class="pregunta">
+          <div class="texto-pregunta">¿Qué te gusta más?</div>
+          <div class="opciones">
+            <button class="opcion" data-rta="Team Invierno">Team Invierno</button>
+            <button class="opcion" data-rta="Team Verano">Team Verano</button>
+          </div>
+        </div>
+
+        <div class="pregunta">
+          <div class="texto-pregunta">¿Preferís la noche o el día?</div>
+          <div class="opciones">
+            <button class="opcion" data-rta="Team Noche">Team Noche</button>
+            <button class="opcion" data-rta="Team Día">Team Día</button>
+          </div>
+        </div>
+
+        <div class="pregunta">
+          <div class="texto-pregunta">¿Con quién venís más seguido al bar?</div>
+          <div class="opciones">
+            <button class="opcion" data-rta="Amigos">Con amigos</button>
+            <button class="opcion" data-rta="Pareja">Con mi pareja</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="indicadores" id="indicadores"></div>
+
+    <div class="botones-container">
+      <button id="btnAnterior" class="btn-navegacion">Anterior</button>
+      <button id="btnFinalizar" class="btn-finalizar" style="display:none;">Finalizar Registro</button>
+    </div>
   </div>
 
   <script>
     const idUsuario = localStorage.getItem("id_usuario");
-    if (!idUsuario) {
-      alert("⚠️ Error: usuario no encontrado. Volvé a registrarte.");
-      window.location.href = "../index.html";
+    const codigoEntrada = localStorage.getItem("codigo_entrada");
+    const preguntas = document.querySelectorAll(".pregunta");
+    const wrapper = document.getElementById("preguntasWrapper");
+    const indicadoresContainer = document.getElementById("indicadores");
+    const btnAnterior = document.getElementById("btnAnterior");
+    const btnFinalizar = document.getElementById("btnFinalizar");
+
+    let indice = 0;
+    let respuestas = [];
+
+    // Crear indicadores
+    preguntas.forEach((_, i) => {
+      const ind = document.createElement("div");
+      ind.classList.add("indicador");
+      if (i === 0) ind.classList.add("activo");
+      indicadoresContainer.appendChild(ind);
+    });
+
+    const indicadores = document.querySelectorAll(".indicador");
+
+    document.querySelectorAll(".opcion").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const contenedor = btn.closest(".pregunta");
+        contenedor.querySelectorAll(".opcion").forEach(o => o.classList.remove("seleccionada"));
+        btn.classList.add("seleccionada");
+        respuestas[indice] = {
+          pregunta: contenedor.querySelector(".texto-pregunta").textContent,
+          respuesta: btn.dataset.rta
+        };
+
+        setTimeout(() => {
+          if (indice < preguntas.length - 1) {
+            indice++;
+            actualizarVista();
+          } else {
+            btnFinalizar.style.display = "inline-block";
+          }
+        }, 250);
+      });
+    });
+
+    function actualizarVista() {
+      wrapper.style.transform = `translateX(-${indice * 100}%)`;
+      indicadores.forEach((i, idx) => i.classList.toggle("activo", idx === indice));
+      btnAnterior.style.display = indice === 0 ? "none" : "inline-block";
+      btnFinalizar.style.display = indice === preguntas.length - 1 ? "inline-block" : "none";
     }
 
-    // Confirmar y actualizar los cupones (por seguridad)
-    async function confirmarRegistro() {
+    btnAnterior.addEventListener("click", () => {
+      indice--;
+      actualizarVista();
+    });
+
+    // Finalizar registro
+    btnFinalizar.addEventListener("click", async () => {
+      if (!respuestas[indice]) {
+        alert("⚠️ Debes responder esta pregunta antes de finalizar.");
+        return;
+      }
+
       try {
-        const res = await fetch("../php/asignar_cupones.php", {
-          method: "POST",
-          body: new URLSearchParams({ id_usuario: idUsuario })
-        });
-        const data = await res.json();
+        const formData = new FormData();
+        formData.append("id_usuario", idUsuario);
+        formData.append("respuestas", JSON.stringify(respuestas));
+
+        const guardar = await fetch("../php/guardar_respuestas.php", { method: "POST", body: formData });
+        const data = await guardar.json();
 
         if (data.status === "ok" || data.status === "success") {
-          console.log("✅ Cupones confirmados");
+          // Generar cupones
+          const cuponData = new FormData();
+          cuponData.append("usuario_id", idUsuario);
+          cuponData.append("codigo", codigoEntrada);
+
+          const cuponResp = await fetch("../php/asignar_cupones.php", { method: "POST", body: cuponData });
+          const result = await cuponResp.json();
+
+          if (result.status === "ok") {
+            alert("🎉 ¡Registro completo! Ya tenés tus 10 cupones. Te llevamos al inicio...");
+            localStorage.setItem("isLogged", "true");
+            setTimeout(() => window.location.href = "../inicio.html", 1500);
+          } else {
+            alert("⚠️ " + result.mensaje);
+          }
         } else {
-          console.warn("⚠️ Cupones ya estaban asignados o hubo un error:", data.mensaje);
+          alert("⚠️ Error al guardar tus respuestas.");
         }
-      } catch (e) {
-        console.error("Error al confirmar cupones:", e);
+
+      } catch (error) {
+        console.error(error);
+        alert("⚠️ Error de conexión con el servidor.");
       }
-    }
-
-    confirmarRegistro();
-
-    document.getElementById("btnIrInicio").addEventListener("click", () => {
-      localStorage.setItem("isLogged", "true");
-      window.location.href = "../inicio.html";
     });
+
+    actualizarVista();
   </script>
 </body>
 </html>

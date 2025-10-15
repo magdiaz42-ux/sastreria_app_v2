@@ -1,68 +1,87 @@
 <?php
+/**
+ * GUARDAR REGISTRO - LA SASTRERÍA (ETAPA 1)
+ * Registra usuario y valida el código de entrada.
+ * No genera cupones todavía (eso se hace en el paso 3).
+ */
+
 header('Content-Type: application/json; charset=utf-8');
 include "conexion.php";
 
-// --- Datos recibidos del formulario ---
-$nombre = trim($_POST['nombre'] ?? '');
-$codigoPais = trim($_POST['codigoPais'] ?? '');
-$telefono = trim($_POST['telefono'] ?? '');
-$email = trim($_POST['email'] ?? '');
-$password = trim($_POST['password'] ?? '');
-$codigoEntrada = strtoupper(trim($_POST['codigo_entrada'] ?? ''));
+try {
+    // --- Datos recibidos ---
+    $nombre        = trim($_POST['nombre'] ?? '');
+    $codigoPais    = trim($_POST['codigoPais'] ?? '+54');
+    $telefono      = trim($_POST['telefono'] ?? '');
+    $email         = trim($_POST['email'] ?? '');
+    $password      = trim($_POST['password'] ?? '');
+    $codigoEntrada = strtoupper(trim($_POST['codigo_entrada'] ?? ''));
 
-if (!$nombre || !$telefono || !$password || !$codigoEntrada) {
-    echo json_encode([
-        "status" => "error",
-        "message" => "Faltan campos obligatorios."
-    ]);
-    exit;
-}
+    // --- Validación básica ---
+    if (!$nombre || !$telefono || !$password || !$codigoEntrada) {
+        throw new Exception("Faltan campos obligatorios.");
+    }
 
-$telefonoCompleto = $codigoPais . $telefono;
+    // --- Normalizar teléfono ---
+    $telefonoCompleto = preg_replace('/\D/', '', $codigoPais . $telefono);
 
-// --- Verificar duplicado de teléfono ---
-$sqlCheck = $conexion->prepare("SELECT id FROM usuarios WHERE telefono = ?");
-$sqlCheck->bind_param("s", $telefonoCompleto);
-$sqlCheck->execute();
-$result = $sqlCheck->get_result();
+    // --- Verificar duplicado de teléfono ---
+    $checkTel = $conexion->prepare("SELECT id FROM usuarios WHERE telefono = ?");
+    $checkTel->bind_param("s", $telefonoCompleto);
+    $checkTel->execute();
+    $resTel = $checkTel->get_result();
+    if ($resTel->num_rows > 0) {
+        throw new Exception("El teléfono ya está registrado.");
+    }
 
-if ($result->num_rows > 0) {
-    echo json_encode(["status" => "error", "message" => "El teléfono ya está registrado."]);
-    exit;
-}
+    // --- Validar código de entrada ---
+    $stmt = $conexion->prepare("SELECT id, estado FROM entradas WHERE codigo = ? LIMIT 1");
+    $stmt->bind_param("s", $codigoEntrada);
+    $stmt->execute();
+    $entrada = $stmt->get_result()->fetch_assoc();
 
-// --- Validar que el código de entrada exista y esté disponible ---
-$stmt = $conexion->prepare("SELECT id, estado FROM entradas WHERE codigo = ? LIMIT 1");
-$stmt->bind_param("s", $codigoEntrada);
-$stmt->execute();
-$res = $stmt->get_result();
+    if (!$entrada) {
+        throw new Exception("Código de entrada inexistente.");
+    }
 
-if ($res->num_rows === 0) {
-    echo json_encode(["status" => "error", "message" => "Código de entrada inexistente."]);
-    exit;
-}
+    if (!in_array($entrada['estado'], ['disponible', 'pendiente'])) {
+        throw new Exception("El código ya fue utilizado o no es válido.");
+    }
 
-$entrada = $res->fetch_assoc();
-if ($entrada['estado'] !== 'disponible') {
-    echo json_encode(["status" => "error", "message" => "El código ya fue utilizado."]);
-    exit;
-}
+    // --- Crear usuario ---
+    $hash = password_hash($password, PASSWORD_DEFAULT);
+    $rol = "cliente";
+    $estado = "activo";
 
-// --- Registrar nuevo usuario ---
-$hash = password_hash($password, PASSWORD_DEFAULT);
-$sql = $conexion->prepare("INSERT INTO usuarios (nombre, telefono, email, password) VALUES (?, ?, ?, ?)");
-$sql->bind_param("ssss", $nombre, $telefonoCompleto, $email, $hash);
+    $insert = $conexion->prepare("
+        INSERT INTO usuarios (nombre, telefono, email, password, rol, estado)
+        VALUES (?, ?, ?, ?, ?, ?)
+    ");
+    $insert->bind_param("ssssss", $nombre, $telefonoCompleto, $email, $hash, $rol, $estado);
+    $insert->execute();
 
-if ($sql->execute()) {
+    if ($insert->affected_rows <= 0) {
+        throw new Exception("No se pudo registrar el usuario.");
+    }
+
     $usuario_id = $conexion->insert_id;
 
+    // --- Marcar código de entrada como 'pendiente' (reservado) ---
+    $update = $conexion->prepare("UPDATE entradas SET estado='pendiente' WHERE id=?");
+    $update->bind_param("i", $entrada['id']);
+    $update->execute();
+
     echo json_encode([
-        "status" => "success",
-        "message" => "Usuario registrado correctamente.",
+        "status" => "ok",
+        "mensaje" => "Usuario registrado correctamente.",
         "id_usuario" => $usuario_id
     ]);
-} else {
-    echo json_encode(["status" => "error", "message" => "Error al registrar: " . $conexion->error]);
+
+} catch (Throwable $e) {
+    echo json_encode([
+        "status" => "error",
+        "mensaje" => $e->getMessage()
+    ]);
 }
 
 $conexion->close();

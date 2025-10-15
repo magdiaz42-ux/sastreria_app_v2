@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Admin | La Sastrería</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      color: #fff;
+      background: url("../assets/img/fondo-hexagonos.jpg") no-repeat center center fixed;
+      background-size: cover;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      z-index: 0;
+    }
+
+    .panel {
+      z-index: 2;
+      margin-top: 60px;
+      background: rgba(0,0,0,0.85);
+      border-radius: 25px;
+      padding: 30px;
+      width: 95%;
+      max-width: 900px;
+      box-shadow: 0 0 30px rgba(0,255,242,0.4);
+    }
+
+    h1 {
+      text-align: center;
+      color: #00fff2;
+      text-shadow: 0 0 15px #00fff2, 0 0 40px #4b00ff;
+      margin-bottom: 30px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      font-size: 0.95rem;
+    }
+
+    th, td {
+      border: 1px solid rgba(0,255,242,0.3);
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background: rgba(0,255,242,0.1);
+      color: #00fff2;
+    }
+
+    tr:hover {
+      background: rgba(255,255,255,0.05);
+    }
+
+    .btn {
+      background: linear-gradient(90deg, #4b00ff, #00fff2);
+      border: none;
+      color: #fff;
+      padding: 10px 25px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+      margin-top: 20px;
+      transition: 0.3s;
+      box-shadow: 0 0 20px rgba(0,255,242,0.4);
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px #00fff2;
+    }
+
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .user-info {
+      font-size: 0.95rem;
+      color: #00fff2;
+      text-shadow: 0 0 8px #00fff2;
+    }
+
+    .logout {
+      background: linear-gradient(90deg, #ff0040, #ff6600);
+      box-shadow: 0 0 15px rgba(255,80,80,0.5);
+    }
+
+    .logout:hover {
+      box-shadow: 0 0 25px rgba(255,80,80,0.8);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="overlay"></div>
+
+  <div class="panel">
+    <div class="header-bar">
+      <div class="user-info" id="userInfo"></div>
+      <button class="btn logout" id="btnLogout">Cerrar sesión</button>
+    </div>
+
+    <h1>🎩 Panel de Administración</h1>
+
+    <button class="btn" id="btnCargar">🔄 Actualizar datos</button>
+
+    <h2>📜 Tickets generados</h2>
+    <table id="tablaTickets">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Código</th>
+          <th>Estado</th>
+          <th>Cajero</th>
+          <th>Fecha</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="5">Cargando datos...</td></tr>
+      </tbody>
+    </table>
+
+    <h2>👥 Usuarios registrados</h2>
+    <table id="tablaUsuarios">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Teléfono</th>
+          <th>Email</th>
+          <th>Rol</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="5">Cargando usuarios...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    // --- Seguridad: solo admin o dueño ---
+    const rol = localStorage.getItem("rol");
+    if (rol !== "admin" && rol !== "duenio") {
+      alert("⛔ No tenés permiso para acceder al panel de administración.");
+      window.location.href = "../login.html";
+    }
+
+    // --- Mostrar usuario ---
+    const userInfo = document.getElementById("userInfo");
+    userInfo.textContent = `👤 ${localStorage.getItem("usuarioNombre")} (${rol})`;
+
+    document.getElementById("btnLogout").addEventListener("click", () => {
+      localStorage.clear();
+      window.location.href = "../login.html";
+    });
+
+    // --- Cargar datos ---
+    document.getElementById("btnCargar").addEventListener("click", cargarDatos);
+
+    async function cargarDatos() {
+      try {
+        // Tickets
+        const resT = await fetch("../php/obtener_entradas.php");
+        const dataT = await resT.json();
+
+        const tbodyT = document.querySelector("#tablaTickets tbody");
+        tbodyT.innerHTML = "";
+        dataT.forEach(t => {
+          const fila = `
+            <tr>
+              <td>${t.id}</td>
+              <td>${t.codigo}</td>
+              <td>${t.estado}</td>
+              <td>${t.cajero || '-'}</td>
+              <td>${t.fecha_generado}</td>
+            </tr>`;
+          tbodyT.innerHTML += fila;
+        });
+
+        // Usuarios
+        const resU = await fetch("../php/obtener_usuarios.php");
+        const dataU = await resU.json();
+
+        const tbodyU = document.querySelector("#tablaUsuarios tbody");
+        tbodyU.innerHTML = "";
+        dataU.forEach(u => {
+          const fila = `
+            <tr>
+              <td>${u.id}</td>
+              <td>${u.nombre}</td>
+              <td>${u.telefono}</td>
+              <td>${u.email}</td>
+              <td>${u.rol}</td>
+            </tr>`;
+          tbodyU.innerHTML += fila;
+        });
+      } catch (err) {
+        alert("⚠️ Error al cargar datos: " + err.message);
+      }
+    }
+
+    cargarDatos();
+  </script>
+</body>
+</html>

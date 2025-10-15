@@ -3,30 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Paso 2 | La Sastrería</title>
-  <link rel="stylesheet" href="../assets/css/style.css">
+  <title>Registro - Paso 2 | La Sastrería</title>
+  <link rel="stylesheet" href="../assets/css/style.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap">
 
   <style>
     html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      min-height: 100vh;
+      margin: 0; padding: 0; width: 100%; min-height: 100vh;
       font-family: "Poppins", sans-serif;
       color: #00fff2;
       background: url("../assets/img/fondo-hexagonos.jpg") no-repeat center center fixed;
       background-size: cover;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow-x: hidden;
-      overflow-y: auto;
+      display: flex; justify-content: center; align-items: center;
+      overflow-x: hidden; overflow-y: auto;
     }
 
     .overlay {
-      position: fixed;
-      inset: 0;
+      position: fixed; inset: 0;
       background: rgba(0, 0, 0, 0.7);
       z-index: 0;
     }
@@ -36,25 +29,16 @@
       background: rgba(0, 0, 0, 0.82);
       border-radius: 25px;
       padding: 40px 30px;
-      width: 92%;
-      max-width: 520px;
+      width: 92%; max-width: 520px;
       text-align: center;
-      box-shadow: 0 0 30px rgba(0, 255, 200, 0.5),
-                  inset 0 0 10px rgba(0, 255, 200, 0.2);
+      box-shadow: 0 0 30px rgba(0, 255, 200, 0.5), inset 0 0 10px rgba(0, 255, 200, 0.2);
       z-index: 2;
       animation: fadeIn 0.8s ease-in-out, glowPulse 4s ease-in-out infinite alternate;
       margin: 40px 0;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(25px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes glowPulse {
-      0% { box-shadow: 0 0 25px rgba(0,255,242,0.3), inset 0 0 10px rgba(0,255,242,0.15); }
-      100% { box-shadow: 0 0 60px rgba(0,255,242,0.7), inset 0 0 20px rgba(0,255,242,0.25); }
-    }
+    @keyframes fadeIn { from {opacity:0;transform:translateY(25px);} to {opacity:1;transform:translateY(0);} }
+    @keyframes glowPulse { 0%{box-shadow:0 0 25px rgba(0,255,242,0.3);}100%{box-shadow:0 0 60px rgba(0,255,242,0.7);} }
 
     .titulo-principal {
       font-size: clamp(1.6rem, 3.5vw, 2.3rem);
@@ -63,84 +47,31 @@
       text-shadow: 0 0 15px #00fff2, 0 0 40px #4b00ff;
     }
 
-    .subtitulo {
-      font-size: 1rem;
-      color: #ccc;
-      margin-bottom: 25px;
-    }
-
-    .selfie-section { margin-bottom: 35px; }
-
-    #flashContainer {
-      position: relative;
-      width: 260px;
-      height: 320px;
-      margin: 0 auto;
-      border-radius: 20px;
-      background: rgba(0, 255, 242, 0.1);
-      box-shadow: 0 0 25px rgba(0, 255, 242, 0.4),
-                  0 0 50px rgba(123, 47, 247, 0.3);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      animation: flashGlow 2.5s infinite alternate;
-    }
-
-    @keyframes flashGlow {
-      0% { box-shadow: 0 0 20px rgba(0, 255, 242, 0.4); }
-      100% { box-shadow: 0 0 60px rgba(0, 255, 242, 0.9); }
-    }
+    .subtitulo { font-size: 1rem; color: #ccc; margin-bottom: 25px; }
 
     #videoContainer {
-      position: relative;
-      width: 220px;
-      height: 280px;
-      border: 2px solid #00fff2;
-      border-radius: 50% / 60%;
-      overflow: hidden;
-      box-shadow: 0 0 25px rgba(0, 255, 200, 0.6);
+      width: 220px; height: 280px; border: 2px solid #00fff2;
+      border-radius: 50% / 60%; overflow: hidden;
+      margin: 0 auto 10px; box-shadow: 0 0 25px rgba(0,255,200,0.6);
     }
+    video, #preview { width: 100%; height: 100%; object-fit: cover; }
 
-    video, .preview {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .preview {
-      display: none;
-      border-radius: 50% / 60%;
-    }
+    #preview { display: none; border-radius: 50% / 60%; }
 
     .boton {
       background: linear-gradient(90deg, #00fff2, #7b2ff7);
-      border: none;
-      color: white;
-      padding: 10px 25px;
-      border-radius: 25px;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 0 0 20px rgba(0, 255, 200, 0.5);
-      transition: 0.3s;
-      margin-top: 12px;
+      border: none; color: white;
+      padding: 10px 25px; border-radius: 25px;
+      font-weight: 600; cursor: pointer;
+      box-shadow: 0 0 20px rgba(0,255,200,0.5);
+      transition: 0.3s; margin-top: 12px;
     }
-
-    .boton:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 25px rgba(123, 47, 247, 0.7);
-    }
-
-    .boton:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
+    .boton:hover { transform: scale(1.05); box-shadow: 0 0 25px rgba(123,47,247,0.7); }
 
     .separador {
-      margin: 25px 0 15px 0;
-      color: #00fff2;
-      font-weight: bold;
-      text-shadow: 0 0 10px #00fff2;
-      border-bottom: 1px solid rgba(0, 255, 200, 0.4);
+      margin: 25px 0 15px 0; color: #00fff2;
+      font-weight: bold; text-shadow: 0 0 10px #00fff2;
+      border-bottom: 1px solid rgba(0,255,200,0.4);
       padding-bottom: 8px;
     }
 
@@ -150,46 +81,28 @@
       gap: 15px;
       justify-items: center;
       margin-top: 10px;
-      margin-bottom: 25px;
     }
-
     .avatar-opcion {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
+      width: 80px; height: 80px; border-radius: 50%;
       border: 2px solid #00fff2;
-      box-shadow: 0 0 10px rgba(0, 255, 200, 0.5);
-      cursor: pointer;
-      transition: all 0.3s ease;
-      object-fit: cover;
+      box-shadow: 0 0 10px rgba(0,255,200,0.5);
+      cursor: pointer; transition: all 0.3s ease; object-fit: cover;
     }
-
     .avatar-opcion:hover { transform: scale(1.1); }
-
     .avatar-opcion.seleccionado {
-      border: 3px solid #7b2ff7;
-      box-shadow: 0 0 20px #7b2ff7;
+      border: 3px solid #7b2ff7; box-shadow: 0 0 20px #7b2ff7;
     }
 
     .btn-continuar {
       display: inline-block;
       background: linear-gradient(90deg, #7b2ff7, #00fff2);
-      color: #fff;
-      border: none;
-      padding: 14px 40px;
-      border-radius: 30px;
-      font-size: 1.1em;
-      cursor: pointer;
-      font-weight: 600;
-      margin-top: 35px;
-      box-shadow: 0 0 25px rgba(0, 255, 200, 0.6);
+      color: #fff; border: none;
+      padding: 14px 40px; border-radius: 30px;
+      font-size: 1.1em; cursor: pointer; font-weight: 600;
+      margin-top: 35px; box-shadow: 0 0 25px rgba(0,255,200,0.6);
       transition: all 0.3s ease;
     }
-
-    .btn-continuar:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 35px rgba(123, 47, 247, 0.8);
-    }
+    .btn-continuar:hover { transform: scale(1.05); box-shadow: 0 0 35px rgba(123,47,247,0.8); }
   </style>
 </head>
 
@@ -200,18 +113,16 @@
     <h1 class="titulo-principal">Mostrate un poco</h1>
     <p class="subtitulo">Sacate una selfie o elegí tu avatar</p>
 
-    <div class="selfie-section">
-      <div id="flashContainer">
-        <div id="videoContainer">
-          <video id="video" autoplay playsinline></video>
-          <img id="preview" class="preview" alt="Selfie previa">
-        </div>
-      </div>
-      <button class="boton" id="btnCapturar">Capturar Selfie</button>
-      <button class="boton" id="btnReintentar" style="display:none;">Reintentar</button>
+    <div id="videoContainer">
+      <video id="video" autoplay playsinline></video>
+      <img id="preview" alt="Selfie previa">
     </div>
 
+    <button class="boton" id="btnCapturar">📸 Capturar</button>
+    <button class="boton" id="btnReintentar" style="display:none;">🔁 Reintentar</button>
+
     <div class="separador">O elegí un avatar</div>
+
     <div class="avatar-grid">
       <img src="../assets/img/avatars/avatar1.png" class="avatar-opcion" data-avatar="../assets/img/avatars/avatar1.png" alt="Avatar 1" />
       <img src="../assets/img/avatars/avatar2.png" class="avatar-opcion" data-avatar="../assets/img/avatars/avatar2.png" alt="Avatar 2" />
@@ -235,9 +146,10 @@
     let avatarSeleccionado = null;
     let stream = null;
 
+    // --- Inicializar cámara ---
     async function iniciarCamara() {
       try {
-        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false });
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
         video.srcObject = stream;
         video.style.display = "block";
         preview.style.display = "none";
@@ -245,11 +157,12 @@
         btnCapturar.disabled = false;
       } catch (error) {
         console.error("Error al iniciar cámara:", error);
-        alert("⚠️ No se pudo acceder a la cámara.");
+        alert("⚠️ No se pudo acceder a la cámara. Podés elegir un avatar en su lugar.");
       }
     }
     iniciarCamara();
 
+    // --- Capturar Selfie ---
     btnCapturar.addEventListener("click", () => {
       const canvas = document.createElement("canvas");
       canvas.width = video.videoWidth;
@@ -261,16 +174,18 @@
       preview.src = selfieData;
       preview.style.display = "block";
       video.style.display = "none";
-      btnCapturar.disabled = true;
       btnReintentar.style.display = "inline-block";
+      btnCapturar.disabled = true;
       if (stream) stream.getTracks().forEach(track => track.stop());
     });
 
+    // --- Reintentar ---
     btnReintentar.addEventListener("click", () => {
       selfieData = null;
       iniciarCamara();
     });
 
+    // --- Selección de avatar ---
     document.querySelectorAll(".avatar-opcion").forEach((img) => {
       img.addEventListener("click", () => {
         document.querySelectorAll(".avatar-opcion").forEach(i => i.classList.remove("seleccionado"));
@@ -279,6 +194,7 @@
       });
     });
 
+    // --- Continuar ---
     btnContinuar.addEventListener("click", () => {
       if (!avatarSeleccionado && !selfieData) {
         alert("⚠️ Tenés que sacarte una selfie o elegir un avatar antes de continuar.");
@@ -287,8 +203,8 @@
 
       const formData = new FormData();
       formData.append("id_usuario", idUsuario);
-      formData.append("avatar", avatarSeleccionado);
-      formData.append("selfie", selfieData);
+      formData.append("avatar", avatarSeleccionado || "");
+      formData.append("selfie", selfieData || "");
 
       fetch("../php/guardar_avatar.php", {
         method: "POST",
@@ -296,17 +212,16 @@
       })
         .then(r => r.json())
         .then(data => {
-          if (data.status === "success") {
+          if (data.status === "ok") {
             localStorage.setItem("usuarioAvatar", avatarSeleccionado || selfieData);
-            alert("✅ Imagen guardada correctamente.");
             window.location.href = "registro_paso3_confirmacion.html";
           } else {
-            alert("⚠️ " + data.message);
+            alert("⚠️ " + (data.mensaje || "Error al guardar avatar/selfie."));
           }
         })
-        .catch((error) => {
-          console.error("Error:", error);
-          alert("⚠️ Error al guardar avatar/selfie.");
+        .catch(err => {
+          console.error(err);
+          alert("⚠️ Error de conexión con el servidor.");
         });
     });
   </script>

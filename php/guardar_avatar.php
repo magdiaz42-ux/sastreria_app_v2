@@ -1,69 +1,69 @@
 <?php
-header('Content-Type: application/json; charset=utf-8');
-include "conexion.php";
+/**
+ * GUARDAR AVATAR / SELFIE - LA SASTRERÍA
+ * --------------------------------------
+ * Guarda la imagen elegida (selfie o avatar predefinido)
+ * en la base de datos de usuarios.
+ */
 
-// --- Recibir datos del cliente ---
+header('Content-Type: application/json; charset=utf-8');
+include_once "conexion.php";
+
 $id_usuario = intval($_POST['id_usuario'] ?? 0);
-$avatar = $_POST['avatar'] ?? null;
-$selfie = $_POST['selfie'] ?? null;
+$avatar     = trim($_POST['avatar'] ?? '');
+$selfie     = $_POST['selfie'] ?? '';
 
 if (!$id_usuario) {
-  echo json_encode(["status" => "error", "message" => "ID de usuario no recibido"]);
+  echo json_encode(["status" => "error", "mensaje" => "ID de usuario no recibido."]);
   exit;
 }
 
 $imgFinal = null;
 
-// --- Si se envió selfie (base64) ---
-if (!empty($selfie) && str_starts_with($selfie, 'data:image')) {
-  $carpeta = "../assets/img/selfies/";
-  
-  // Crear carpeta si no existe
-  if (!file_exists($carpeta)) {
-    mkdir($carpeta, 0777, true);
+try {
+  // --- Procesar selfie (imagen base64) ---
+  if ($selfie && str_starts_with($selfie, 'data:image')) {
+    $carpeta = "../assets/img/selfies/";
+    if (!file_exists($carpeta)) mkdir($carpeta, 0777, true);
+
+    $nombreArchivo = "selfie_" . $id_usuario . "_" . time() . ".png";
+    $rutaArchivo = $carpeta . $nombreArchivo;
+
+    $data = explode(',', $selfie);
+    $selfieDecoded = base64_decode(end($data));
+
+    if (file_put_contents($rutaArchivo, $selfieDecoded) === false) {
+      throw new Exception("No se pudo guardar la imagen en el servidor.");
+    }
+
+    $imgFinal = "assets/img/selfies/" . $nombreArchivo;
+
+  } elseif ($avatar) {
+    // --- Si el usuario elige avatar predefinido ---
+    $imgFinal = $avatar;
+  } else {
+    // --- Si no se elige nada, asignar un avatar por defecto ---
+    $imgFinal = "assets/img/avatars/avatar1.png";
   }
 
-  // Nombre único del archivo
-  $nombreArchivo = "selfie_" . $id_usuario . "_" . time() . ".png";
-  $rutaArchivo = $carpeta . $nombreArchivo;
+  // --- Actualizar usuario en la base de datos ---
+  $sql = $conexion->prepare("UPDATE usuarios SET avatar = ? WHERE id = ?");
+  $sql->bind_param("si", $imgFinal, $id_usuario);
 
-  // Decodificar y guardar
-  $data = explode(',', $selfie);
-  $imagenDecodificada = base64_decode(end($data));
-
-  if (file_put_contents($rutaArchivo, $imagenDecodificada) === false) {
-    echo json_encode(["status" => "error", "message" => "Error al guardar la imagen."]);
-    exit;
+  if ($sql->execute()) {
+    echo json_encode([
+      "status"    => "ok",
+      "mensaje"   => "Imagen guardada correctamente.",
+      "img_final" => $imgFinal
+    ]);
+  } else {
+    throw new Exception("Error al actualizar base de datos: " . $conexion->error);
   }
 
-  // Ruta pública para mostrar en el front
-  $imgFinal = "assets/img/selfies/" . $nombreArchivo;
-}
-
-// --- Si eligió avatar predefinido ---
-elseif (!empty($avatar)) {
-  $imgFinal = $avatar;
-}
-
-// --- Imagen por defecto ---
-else {
-  $imgFinal = "assets/img/avatars/avatar1.png";
-}
-
-// --- Actualizar en base de datos ---
-$sql = $conexion->prepare("UPDATE usuarios SET avatar = ? WHERE id = ?");
-$sql->bind_param("si", $imgFinal, $id_usuario);
-
-if ($sql->execute()) {
+} catch (Exception $e) {
   echo json_encode([
-    "status" => "success",
-    "message" => "Avatar guardado correctamente.",
-    "img_final" => $imgFinal
-  ]);
-} else {
-  echo json_encode([
-    "status" => "error",
-    "message" => "Error al actualizar el avatar en la base de datos: " . $conexion->error
+    "status"  => "error",
+    "mensaje" => $e->getMessage()
   ]);
 }
 

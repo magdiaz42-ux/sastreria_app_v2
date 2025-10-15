@@ -14,7 +14,7 @@
       min-height: 100vh;
       font-family: "Poppins", sans-serif;
       color: #fff;
-      background: url("assets/img/fondo-hexagonos.jpg") no-repeat center center fixed;
+      background: url("../assets/img/fondo-hexagonos.jpg") no-repeat center center fixed;
       background-size: cover;
       display: flex;
       justify-content: center;
@@ -190,7 +190,7 @@
       btnGenerar.textContent = "Generando...";
 
       try {
-        const res = await fetch("php/generar_ticket.php");
+        const res = await fetch("../php/generar_ticket.php");
         const data = await res.json();
 
         if (data.status === "ok") {
@@ -215,7 +215,7 @@
       if (!codigo) return alert("⚠️ Ingresá un código para validar.");
 
       try {
-        const res = await fetch("php/validar_codigo_entrada.php", {
+        const res = await fetch("../php/validar_codigo_entrada.php", {
           method: "POST",
           body: new URLSearchParams({ codigo })
         });

@@ -2,45 +2,43 @@
 // ==========================
 // CONEXIÓN BASE DE DATOS - LA SASTRERÍA
 // ==========================
+//
+// ⚠️ IMPORTANTE: NO imprimas nada aquí si todo está OK.
+// Este archivo se "include" desde otros PHP.
+// Si querés probar la conexión, creá un php/health.php aparte.
+//
 
-// ⚠️ Este archivo solo define la conexión y nunca imprime nada salvo error fatal.
+header('Content-Type: application/json; charset=utf-8');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-  // Maneja preflight CORS en caso de que se llame directamente
-  header('Access-Control-Allow-Origin: *');
-  header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-  header('Access-Control-Allow-Headers: Content-Type');
-  exit(0);
+  exit(0); // Preflight CORS
 }
 
 // ---------- CONFIG DB ----------
 $host = "localhost";
 $user = "root";
 $pass = "";
-$db   = "sastreria_db"; // Asegurate que el nombre coincida exactamente con tu base
+$db   = "sastreria_db"; // ← Asegurate de usar este nombre real
 
 // ---------- CONEXIÓN ----------
-mysqli_report(MYSQLI_REPORT_OFF);
+mysqli_report(MYSQLI_REPORT_OFF); // Desactiva reportes automáticos
 $conn = @new mysqli($host, $user, $pass, $db);
 
-// Alias de compatibilidad
+// Alias retro-compatibles
 $conexion = $conn;
+$con = $conn;
 
-// ---------- MANEJO DE ERROR ----------
+// ---------- ERRORES DE CONEXIÓN ----------
 if (!$conn || $conn->connect_errno) {
   http_response_code(500);
-  // Devuelve JSON solo si se accede directamente (no si se incluye)
-  if (basename($_SERVER['SCRIPT_FILENAME']) === basename(__FILE__)) {
-    header('Content-Type: application/json; charset=utf-8');
-    echo json_encode([
-      "status"  => "error",
-      "message" => "❌ Error al conectar a la base de datos: " . ($conn?->connect_error ?? 'sin detalle'),
-      "code"    => $conn?->connect_errno
-    ]);
-  } else {
-    // Si se incluye desde otro PHP, lanzamos una excepción en vez de imprimir
-    throw new Exception("Error de conexión con la base de datos: " . ($conn?->connect_error ?? 'sin detalle'));
-  }
+  echo json_encode([
+    "status"  => "error",
+    "message" => "❌ Error al conectar a la base de datos: " . ($conn?->connect_error ?? 'sin detalle'),
+    "code"    => $conn?->connect_errno
+  ]);
   exit;
 }
 
@@ -49,4 +47,34 @@ if (!$conn->set_charset("utf8mb4")) {
   error_log("⚠️ Error al establecer UTF-8: " . $conn->error);
 }
 
-// ✅ Conexión OK: $conexion y $conn están listos para usar.
+// ---------- FUNCIÓN OPCIONAL ----------
+/**
+ * Retorna una nueva conexión mysqli.
+ * Útil cuando se necesita una conexión aislada o dentro de funciones.
+ */
+function getConexion() {
+  $host = "localhost";
+  $user = "root";
+  $pass = "";
+  $db   = "sastreria_db";
+
+  mysqli_report(MYSQLI_REPORT_OFF);
+  $dbConn = @new mysqli($host, $user, $pass, $db);
+
+  if (!$dbConn || $dbConn->connect_errno) {
+    http_response_code(500);
+    echo json_encode([
+      "status"  => "error",
+      "message" => "❌ Error al conectar (getConexion): " . ($dbConn?->connect_error ?? 'sin detalle'),
+      "code"    => $dbConn?->connect_errno
+    ]);
+    exit;
+  }
+
+  $dbConn->set_charset("utf8mb4");
+  return $dbConn;
+}
+
+// ✅ Si llegamos acá, la conexión está OK y lista para usarse con:
+//    $conn, $conexion, $con o getConexion()
+?>

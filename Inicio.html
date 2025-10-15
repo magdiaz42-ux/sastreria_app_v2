@@ -181,7 +181,6 @@
       100% { text-shadow: 0 0 50px #00fff2, 0 0 100px #4b00ff; }
     }
 
-    /* === SECCIÓN CUPONES === */
     #listaCupones {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -229,7 +228,7 @@
 
     .estado-usado { opacity: .45; filter: grayscale(1); }
 
-    /* === MODAL CUPÓN AMPLIADO === */
+    /* === MODAL === */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -298,12 +297,10 @@
 <body>
   <div class="overlay"></div>
 
-  <!-- Botón menú -->
   <div class="menu-btn" id="menuBtn">
     <span></span><span></span><span></span>
   </div>
 
-  <!-- Menú lateral -->
   <div class="sidebar" id="sidebar">
     <div>
       <div class="user-info">
@@ -325,12 +322,10 @@
     <button class="logout-btn" id="logoutBtn">Cerrar Sesión</button>
   </div>
 
-  <!-- Contenedor principal -->
   <div class="contenido" id="mainContent">
     <h1 class="titulo-bienvenida">Bienvenido a La Sastrería</h1>
   </div>
 
-  <!-- Modal de cupón ampliado -->
   <div id="modalOverlay" class="modal-overlay" style="display:none;">
     <div class="modal-cupon" id="modalCupon">
       <span class="modal-close" id="closeModal">&times;</span>
@@ -379,7 +374,7 @@
         mainContent.innerHTML = `<h2 style="color:#ff5afc;text-shadow:0 0 15px #ff5afc;">🎟️ Tus Cupones</h2><p>Cargando...</p>`;
 
         try {
-          const res = await fetch(`php/obtener_cupones.php?id_usuario=${idUsuario}`);
+          const res = await fetch(`./php/obtener_cupones.php?id_usuario=${idUsuario}`);
           const data = await res.json();
 
           if (data.status === "ok" && data.cupones.length > 0) {
@@ -389,6 +384,7 @@
                 <p>${c.descripcion}</p>
                 <p><strong>Tipo:</strong> ${c.tipo}</p>
                 <p><strong>Código:</strong> ${c.codigo_unico || "—"}</p>
+                <p><strong>Estado:</strong> ${c.usado == 1 ? "Usado ❌" : "Disponible ✅"}</p>
                 <div class="qr">
                   <img src="https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(c.codigo_unico)}&size=100x100" alt="QR Cupón">
                 </div>
@@ -416,25 +412,25 @@
       }
     }
 
-    // --- Modal de cupón ampliado ---
     const modalOverlay = document.getElementById("modalOverlay");
     const modalContent = document.getElementById("modalContent");
-    const closeModal = document.getElementById("closeModal");
 
     document.addEventListener("click", e => {
       if (e.target.closest(".cupon")) {
         const cup = e.target.closest(".cupon");
         const nombre = cup.querySelector("h2").innerText;
         const descripcion = cup.querySelector("p").innerText;
-        const tipo = cup.querySelector("p strong") ? cup.querySelector("p strong").innerText : "";
-        const codigo = cup.querySelector("p:nth-of-type(3)")?.innerText.replace("Código:", "").trim();
+        const tipo = cup.querySelectorAll("p")[1]?.innerText;
+        const codigo = cup.querySelectorAll("p")[2]?.innerText;
+        const estado = cup.querySelectorAll("p")[3]?.innerText;
         const qrImg = cup.querySelector(".qr img")?.src || "";
 
         modalContent.innerHTML = `
           <h2>${nombre}</h2>
           <p>${descripcion}</p>
-          <p><strong>${tipo}</strong></p>
-          <p><strong>${codigo}</strong></p>
+          <p>${tipo}</p>
+          <p>${codigo}</p>
+          <p>${estado}</p>
           <div class="qr"><img src="${qrImg}" alt="QR Cupón"></div>
           <div class="icono">🎁</div>
         `;

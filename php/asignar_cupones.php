@@ -1,91 +1,146 @@
 <?php
-include_once "conexion.php";
-include_once "generar_cupones.php";
+/**
+ * ASIGNAR CUPONES - LA SASTRERÍA (versión unificada)
+ * --------------------------------------------------
+ * Genera 10 cupones por usuario (1 fijo + 9 caprichos),
+ * marca el código de entrada como usado y activa el usuario.
+ */
 
 header("Content-Type: application/json; charset=utf-8");
-header("Access-Control-Allow-Origin: *");
+include_once "conexion.php";
 
-// === PARÁMETROS ===
-$id_usuario = intval($_POST["id_usuario"] ?? 0);
-$codigo = strtoupper(trim($_POST["codigo"] ?? ''));
+// Compatibilidad $con / $conexion
+if (!isset($conexion) && isset($con)) $conexion = $con;
 
-if (!$id_usuario) {
-  echo json_encode(["status" => "error", "mensaje" => "❌ Falta el ID de usuario"]);
+// --- Recibir datos ---
+$usuario_id = intval($_POST["usuario_id"] ?? 0);
+$codigo     = strtoupper(trim($_POST["codigo"] ?? ''));
+
+if (!$usuario_id || !$codigo) {
+  echo json_encode(["status" => "error", "mensaje" => "Datos incompletos."]);
   exit;
 }
 
-// === VALIDAR EXISTENCIA DEL USUARIO ===
-$userCheck = $conexion->prepare("SELECT id FROM usuarios WHERE id = ? LIMIT 1");
-$userCheck->bind_param("i", $id_usuario);
-$userCheck->execute();
-$user = $userCheck->get_result()->fetch_assoc();
-$userCheck->close();
+try {
+  // --- Validar usuario ---
+  $checkUser = $conexion->prepare("SELECT id, estado FROM usuarios WHERE id = ? LIMIT 1");
+  $checkUser->bind_param("i", $usuario_id);
+  $checkUser->execute();
+  $user = $checkUser->get_result()->fetch_assoc();
 
-if (!$user) {
-  echo json_encode(["status" => "error", "mensaje" => "❌ Usuario inexistente"]);
-  exit;
-}
+  if (!$user) {
+    throw new Exception("Usuario inexistente.");
+  }
 
-// === VALIDAR CÓDIGO DE ENTRADA (opcional, si se envía) ===
-if ($codigo) {
-  $checkEntrada = $conexion->prepare("SELECT id, estado FROM entradas WHERE UPPER(codigo)=? LIMIT 1");
-  $checkEntrada->bind_param("s", $codigo);
-  $checkEntrada->execute();
-  $entrada = $checkEntrada->get_result()->fetch_assoc();
-  $checkEntrada->close();
+  // --- Validar entrada ---
+  $stmt = $conexion->prepare("SELECT id, estado FROM entradas WHERE codigo = ? LIMIT 1");
+  $stmt->bind_param("s", $codigo);
+  $stmt->execute();
+  $entrada = $stmt->get_result()->fetch_assoc();
 
   if (!$entrada) {
-    echo json_encode(["status" => "error", "mensaje" => "⚠️ Código de entrada no válido"]);
-    exit;
-  }
-  if (strtolower($entrada["estado"]) === "usado") {
-    echo json_encode(["status" => "error", "mensaje" => "⚠️ Este código ya fue utilizado"]);
-    exit;
+    throw new Exception("Código de entrada no encontrado.");
   }
 
-  // Marcar el código como usado
-  $upd = $conexion->prepare("UPDATE entradas SET estado='usado', id_usuario=? WHERE id=?");
-  $upd->bind_param("ii", $id_usuario, $entrada["id"]);
-  $upd->execute();
-  $upd->close();
-}
+  if ($entrada["estado"] === "usado") {
+    echo json_encode(["status" => "ok", "mensaje" => "El código ya fue utilizado."]);
+    exit;
+  }
 
-// === VERIFICAR SI YA TIENE CUPONES ===
-$check = $conexion->prepare("SELECT COUNT(*) AS total FROM cupones WHERE id_usuario = ?");
-$check->bind_param("i", $id_usuario);
-$check->execute();
-$total = ($check->get_result()->fetch_assoc()["total"]) ?? 0;
-$check->close();
+  // --- Verificar si ya tiene cupones ---
+  $checkCupones = $conexion->prepare("SELECT COUNT(*) AS total FROM cupones WHERE id_usuario = ? AND codigo_entrada = ?");
+  $checkCupones->bind_param("is", $usuario_id, $codigo);
+  $checkCupones->execute();
+  $totalExistente = $checkCupones->get_result()->fetch_assoc()["total"] ?? 0;
 
-if ($total >= 10) {
+  if ($totalExistente >= 10) {
+    echo json_encode(["status" => "ok", "mensaje" => "Ya tiene cupones asignados."]);
+    exit;
+  }
+
+  // --- Helper: generar código único ---
+  function generarCodigo($conexion, $longitud = 8) {
+    $chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    do {
+      $codigo = '';
+      for ($i = 0; $i < $longitud; $i++) {
+        $codigo .= $chars[random_int(0, strlen($chars) - 1)];
+      }
+      $verif = $conexion->prepare("SELECT 1 FROM cupones WHERE codigo_unico = ? LIMIT 1");
+      $verif->bind_param("s", $codigo);
+      $verif->execute();
+      $existe = $verif->get_result()->num_rows > 0;
+    } while ($existe);
+    return $codigo;
+  }
+
+  // --- Transacción principal ---
+  $conexion->begin_transaction();
+
+  // --- Base de cupones ---
+  $cupones = [];
+
+  // Si hay tabla base, usarla
+  $existeBase = $conexion->query("SHOW TABLES LIKE 'cupones_base'");
+  if ($existeBase && $existeBase->num_rows > 0) {
+    $baseFijo = $conexion->query("SELECT * FROM cupones_base WHERE tipo='trago' AND activo=1 ORDER BY RAND() LIMIT 1");
+    $baseCap = $conexion->query("SELECT * FROM cupones_base WHERE tipo='capricho' AND activo=1 ORDER BY RAND() LIMIT 9");
+    if ($baseFijo && $baseFijo->num_rows > 0) $cupones[] = $baseFijo->fetch_assoc();
+    while ($r = $baseCap->fetch_assoc()) $cupones[] = $r;
+  } else {
+    // Si no existe tabla base, usar lista por defecto
+    $cupones = [
+      ["nombre" => "Trago de bienvenida", "tipo" => "trago", "descripcion" => "Primer trago gratis"],
+      ["nombre" => "Capricho 1", "tipo" => "capricho", "descripcion" => "Cupón sorpresa"],
+      ["nombre" => "Capricho 2", "tipo" => "capricho", "descripcion" => "Cupón sorpresa"],
+      ["nombre" => "Capricho 3", "tipo" => "capricho", "descripcion" => "Cupón sorpresa"],
+      ["nombre" => "Capricho 4", "tipo" => "capricho", "descripcion" => "Cupón sorpresa"],
+      ["nombre" => "Capricho 5", "tipo" => "capricho", "descripcion" => "Cupón sorpresa"],
+      ["nombre" => "Capricho 6", "tipo" => "capricho", "descripcion" => "Cupón sorpresa"],
+      ["nombre" => "Capricho 7", "tipo" => "capricho", "descripcion" => "Cupón sorpresa"],
+      ["nombre" => "Capricho 8", "tipo" => "capricho", "descripcion" => "Cupón sorpresa"],
+      ["nombre" => "Capricho 9", "tipo" => "capricho", "descripcion" => "Cupón sorpresa"]
+    ];
+  }
+
+  // --- Insertar cupones ---
+  $ins = $conexion->prepare("
+    INSERT INTO cupones (
+      id_usuario, codigo_entrada, codigo_unico, nombre, descripcion, tipo, usado, estado, fecha_asignacion
+    ) VALUES (?, ?, ?, ?, ?, ?, 0, 'activo', NOW())
+  ");
+
+  foreach ($cupones as $c) {
+    $codigo_unico = generarCodigo($conexion);
+    $nombre = $c["nombre"];
+    $desc = $c["descripcion"];
+    $tipo = $c["tipo"];
+    $ins->bind_param("isssss", $usuario_id, $codigo, $codigo_unico, $nombre, $desc, $tipo);
+    $ins->execute();
+  }
+
+  // --- Marcar entrada como usada ---
+  $updEntrada = $conexion->prepare("UPDATE entradas SET estado='usado' WHERE id = ?");
+  $updEntrada->bind_param("i", $entrada["id"]);
+  $updEntrada->execute();
+
+  // --- Activar usuario ---
+  $conexion->query("UPDATE usuarios SET estado='activo' WHERE id = $usuario_id");
+
+  $conexion->commit();
+
   echo json_encode([
     "status" => "ok",
-    "mensaje" => "El usuario ya tiene $total cupones asignados.",
-    "cupones_asignados" => $total
+    "mensaje" => "🎉 10 cupones asignados correctamente y usuario activado."
   ]);
-  exit;
-}
 
-// === GENERAR LOS CUPONES QUE FALTAN ===
-try {
-  generarCupones($conexion, $id_usuario);
-
-  // Confirmar cantidad real
-  $check2 = $conexion->prepare("SELECT COUNT(*) AS total FROM cupones WHERE id_usuario = ?");
-  $check2->bind_param("i", $id_usuario);
-  $check2->execute();
-  $nuevoTotal = ($check2->get_result()->fetch_assoc()["total"]) ?? 0;
-  $check2->close();
-
-  echo json_encode([
-    "status" => "ok",
-    "mensaje" => "✅ Cupones asignados correctamente",
-    "cupones_asignados" => $nuevoTotal
-  ]);
 } catch (Throwable $e) {
+  $conexion->rollback();
   echo json_encode([
     "status" => "error",
-    "mensaje" => "❌ Error generando cupones: " . $e->getMessage()
+    "mensaje" => "Fallo asignando cupones: " . $e->getMessage()
   ]);
 }
+
+$conexion->close();
 ?>
