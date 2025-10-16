@@ -26,7 +26,7 @@ try {
     exit;
   }
 
-  // --- Obtener cupones ---
+  // --- Obtener cupones activos (no usados y no vencidos) ---
   $query = $conexion->prepare("
     SELECT 
       id, 
@@ -35,10 +35,12 @@ try {
       tipo, 
       codigo_unico, 
       usado, 
-      fecha_asignacion
+      fecha_asignacion,
+      DATE_FORMAT(DATE_ADD(fecha_asignacion, INTERVAL 24 HOUR), '%d/%m/%Y %H:%i') AS fecha_vencimiento
     FROM cupones 
     WHERE id_usuario = ?
-    ORDER BY tipo = 'trago' DESC, fecha_asignacion ASC
+      AND NOW() <= DATE_ADD(fecha_asignacion, INTERVAL 24 HOUR)
+    ORDER BY tipo = 'Trago' DESC, fecha_asignacion ASC
   ");
   $query->bind_param("i", $id_usuario);
   $query->execute();
@@ -57,7 +59,8 @@ try {
     ],
     "total" => count($cupones),
     "cupones" => $cupones
-  ]);
+  ], JSON_UNESCAPED_UNICODE);
+
 } catch (Throwable $e) {
   echo json_encode([
     "status" => "error",
